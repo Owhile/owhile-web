@@ -5,7 +5,7 @@ rendering**, because the site's central requirement is that a creator can point 
 agent at it and have the agent set them up. An agent fetching a JS-rendered SPA gets an
 empty shell; server-rendered semantic HTML is what makes the requirement real.
 
-Built against `Praxis/knowledge/brand/owhile-design.md` (30 sections, adopted 2026-09-02).
+Built against the Owhile design system (30 sections, adopted 2026-09-02).
 
 ## Run it
 
@@ -55,15 +55,17 @@ docs actually send:
 No `cleanUrls`, no `trailingSlash` rewriting: `llms.txt` publishes exact URLs and agents
 fetch them literally. A redirect hop is a failure mode with no upside here.
 
-## Ship gates — this is not launchable yet
+## What turns on when
 
-1. **Hero "Step in"** needs one finished experience good enough to be the front door.
-2. **A "Running today" section** needs 3+ real experiences with real art and named makers.
-3. **The time picker** needs ~12+ across three duration bands.
-4. **`creators/start.md` step 2 does not work** — `pip install owhile` resolves to a
-   placeholder. The gates exist and are tested; they are not published.
-5. **A cold agent run** must be done once: point a fresh agent at the URL with no other
-   context and confirm it reaches a passing gate report unaided.
+Sections are written but held back until there is real content behind them, because a
+page that implies a catalogue it does not have fails on its own terms.
 
-Until 4 and 5 are closed, the creator pathway should end at `creators/` and an email
-address rather than at the runbook.
+| Turns on at | |
+|---|---|
+| 1 finished experience | The hero's **Step in** goes somewhere. |
+| 3+ experiences | A **Running today** section, with real art and named makers. |
+| ~12 across 3 duration bands | The **How long is your while?** picker becomes a control rather than a statement. |
+| `owhile` published to PyPI | `creators/start.md` executes end to end. |
+
+Until the last of those, the creator pathway ends at `creators/` and a conversation
+rather than at the runbook.
