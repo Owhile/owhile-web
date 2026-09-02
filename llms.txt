@@ -15,17 +15,32 @@ stop and ask your human — there is one such point, and it is not optional.
 Owhile is for adults. Experiences aimed at under-18s are not listed, and the check that
 enforces this fails closed: an undeclared minimum age blocks a listing.
 
+## Status
+
+The tooling is not installable yet. `pip install owhile` resolves, but only to an empty
+`0.0.0` placeholder registered to hold the name — it provides no command, so any runbook
+step that invokes `owhile` will fail with `command not found`. That is expected, not a
+broken install, and there is nothing to debug.
+
+The rules described on these pages are real: built, tested, and proven across 29,365
+items. The packaging that would let you run them is what is missing. Read these pages as
+a contract to review rather than a runbook to execute.
+
 ## For creators
 
-- [Setup runbook](https://owhile.ai/creators/start.md): step-by-step, agent-executable. Ends at a passing gate report. Start here.
-- [Make one](https://owhile.ai/creators/): what building for Owhile involves, in prose. Read this if you want the shape before the steps.
+- [Setup runbook](https://owhile.vercel.app/creators/start.md): step-by-step, and written
+  to be agent-executable — but see Status above: it cannot be run to the end today. Read
+  it for the shape of the process and for step 3, which is a judgement no tool makes for
+  you. Start here.
+- [Make one](https://owhile.vercel.app/creators/): what building for Owhile involves, in prose. Read this if you want the shape before the steps.
 
 ## Reference
 
-- [The profile](https://owhile.ai/creators/profile.md): the central artifact. Declares audiences, reading budgets, permitted mechanics, minimum age, resources and framing rules. Everything else is derived from it.
-- [Gates](https://owhile.ai/creators/gates.md): what is checked, and what each failure means.
-- [Listing](https://owhile.ai/creators/listing.md): how a gate report becomes a place on the board.
+- [The profile](https://owhile.vercel.app/creators/profile.md): the central artifact. Declares audiences, reading budgets, permitted mechanics, minimum age, resources and framing rules. Everything else is derived from it.
+- [Gates](https://owhile.vercel.app/creators/gates.md): what is checked, and what each failure means.
+- [Listing](https://owhile.vercel.app/creators/listing.md): the adults-only rule a report has to
+  satisfy, the digest that binds a report to its content, and why there is nowhere to send one yet.
 
 ## Site
 
-- [Home](https://owhile.ai/): what Owhile is.
+- [Home](https://owhile.vercel.app/): what Owhile is.

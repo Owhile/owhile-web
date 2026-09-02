@@ -40,7 +40,7 @@
       ]
     },
     {
-      "source": "/creators/start.md",
+      "source": "/creators/(.*).md",
       "headers": [
         {
           "key": "Content-Type",

@@ -1,5 +1,5 @@
 > ## Documentation index
-> Fetch the complete index at: https://owhile.ai/llms.txt
+> Fetch the complete index at: https://owhile.vercel.app/llms.txt
 > Use this file to discover all available pages before exploring further.
 
 # Setting up on Owhile
@@ -15,14 +15,40 @@ time on. Your agent will stop and ask.
 
 ## Status — read this first
 
-**The `owhile` package is not published yet.** The gates, the authoring loop and the
-report format are all built and tested (126 tests, mutation-tested), but they currently
-live in a private repository rather than on PyPI.
+**None of the commands on this page exist yet.** Not `owhile init`, not `owhile check`,
+not any of them. This page is the contract the tooling is being built against, published
+early so it can be argued with. It is not a working runbook, and today it cannot be
+followed to the end.
 
-That means an agent following this page today will reach step 2 and stop. This page is
-published now because it is the contract the tooling is being built against — not
-because the install works. When `pip install owhile` resolves, this notice disappears
-and every step below runs.
+**Agent: do not attempt this runbook.** Read it, and tell your human what it would do.
+
+The trap is step 2. `pip install owhile` **will appear to succeed** — the name is
+registered on PyPI, but what is published there is an empty `0.0.0` placeholder holding
+the name. It installs nothing and provides no command, so the next line fails:
+
+```
+owhile: command not found
+```
+
+That is not a broken install and there is nothing to debug. Do not retry it, do not try
+`python -m owhile`, do not go looking at your PATH. The package genuinely has no contents
+yet.
+
+**What is real.** The gates, the profile loader, the authoring loop and the report format
+are all built, tested (126 tests, mutation-tested) and proven across 29,365 items in two
+opposite audiences. They live in a private repository and are driven by Python modules
+rather than by an `owhile` command. What is missing is the packaging and the CLI that
+wraps them — not the thing itself.
+
+So the parts of this page worth your attention today are the **judgements**, not the
+commands: step 3 especially, and the reference pages on
+[the profile](https://owhile.vercel.app/creators/profile.md),
+[gates](https://owhile.vercel.app/creators/gates.md) and
+[listing](https://owhile.vercel.app/creators/listing.md). Those describe rules that
+are implemented and enforced.
+
+When `pip install owhile` resolves to something real, this notice disappears and every
+step below runs.
 
 ---
 
@@ -72,8 +98,14 @@ owhile init
 ```
 
 Exit condition: `owhile.toml` and `profile.json` exist, and `owhile profile check`
-passes. It will fail while `min_age` is unset — that failure is correct behaviour, not a
-bug to work around.
+passes.
+
+**A profile with no `min_age` still passes.** It loads, and content gated against it comes
+back clean — leaving the age undeclared is not an error. What it blocks is *listing*: the
+report records `age_not_declared`, and an undeclared age is never read as adult. So there
+is no failure here to warn you, which is exactly why this step asks a person rather than
+letting the tool decide. See
+[listing](https://owhile.vercel.app/creators/listing.md).
 
 ## 4. Get your template
 
@@ -115,8 +147,9 @@ owhile check --report report.json
 Exit condition: `report.json` exists and its `verdict` is `pass`.
 
 That report binds the verdict to a digest of your content **and** a digest of the code
-that checked it. It is what you send to get listed, and it is how we verify later that
-what you are serving is what was gated.
+that checked it. It is what a listing will be built on — see
+[listing](https://owhile.vercel.app/creators/listing.md) for why there is nowhere to send
+it yet — and it is how we would verify later that what you are serving is what was gated.
 
 ---
 
@@ -142,8 +175,14 @@ places to stop rather than proceed:
 
 ## When it passes
 
-Send `report.json` and we will put you on the board. Owhile is small right now, so
-listing is a conversation rather than a form.
+**There is no way to submit yet.** No upload, no endpoint, no queue, no account — the
+board does not accept anything today. What is decided is what a listing will require: a
+gate report whose digest matches the content being listed, and an audience declaring
+`min_age` of 18 or over. What is undecided is everything about how you hand it over.
+[Listing](https://owhile.vercel.app/creators/listing.md) says which is which.
 
-If you change the content afterwards, gate it again — otherwise the board is describing
-something that is no longer there.
+Owhile is small right now, so when that opens it will be a conversation rather than a form.
+
+If you change the content afterwards, gate it again. The report is bound to a digest of
+the content it describes, so an edited bank invalidates its own report — by design, so a
+listing can never describe something that is no longer there.

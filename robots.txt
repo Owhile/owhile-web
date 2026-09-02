@@ -1,4 +1,4 @@
-# owhile.ai
+# owhile.vercel.app
 #
 # This site is meant to be read by agents. A creator pointing their coding
 # assistant here is the intended path, not an edge case — so the crawlers that
@@ -30,4 +30,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://owhile.ai/sitemap.xml
+Sitemap: https://owhile.vercel.app/sitemap.xml
