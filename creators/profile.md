@@ -39,11 +39,15 @@ installing it gives you nothing to run. The checker is a set of Python modules t
 live in a private repository, driven by two scripts rather than an installed tool.
 
 The contract on this page is real: it describes what the code does today, limits included.
-The loader, the gates and the report format are built and tested — 126 tests, mutation-tested
-— and proven across a 29,365-item corpus in two opposite audiences. That corpus run used an
-empty resource registry, so the resource rules on this page are proven by the test suite
-rather than by the corpus. Where a declared rule is accepted and then not enforced,
-[Limits worth knowing](#limits-worth-knowing) says so.
+The loader, the gates and the report format are built and tested — 193 tests, mutation-tested;
+161 over the gates and loader, 32 over the authoring template — and proven across a
+29,365-item corpus in two opposite audiences, which still gates to zero findings across all
+five gates. That corpus run used an empty resource registry, so the resource rules on this
+page are proven by the test suite rather than by the corpus. Where a declared rule is accepted
+and then not enforced, [Limits worth knowing](#limits-worth-knowing) says so — and that list
+is shorter than it was. Five rules this page used to document as accepted-but-not-running now
+run. Where the history of one of those explains a design decision, it has been kept in the
+section the decision belongs to rather than deleted.
 
 Read this page as the format your file has to be in, not as a tool you can install today.
 [The setup runbook](https://owhile.vercel.app/creators/start.md) marks the same gap.
@@ -72,9 +76,13 @@ are the literal ones. The element-wise kinds — `count_where`, `exactly_one`, `
 `distinct` with `field` — accept either spelling, as do the `over` and `into` arguments of a
 chance model.
 
+This is the one silent failure left in path handling, and it is still silent. Proofread your
+paths.
+
 ## Field roles
 
-Every string in an item declares what it *is* — except the id field, the mechanic field and
+Every scalar in an item — string, number, boolean or null — declares what it *is*, except the
+id field, the mechanic field and
 `audience`, which the checker exempts because it already knows what those are. There are five
 roles and no others:
 
@@ -91,10 +99,17 @@ item's visible text with a hand-written if/elif chain over mechanic names. An un
 mechanic fell through it and returned almost nothing — blinding the length cap, the resource
 binding, the claim check and the duplicate fingerprint at once, all reporting green. Roles
 make "what will a person read?" a walk over your declarations instead. It cannot come out
-incomplete: a string in your content with no declared role fails the first gate that runs, on
+incomplete: a field in your content with no declared role fails the first gate that runs, on
 every item that carries it. That is a content finding, not a load-time refusal — the profile
 loads fine, and the gate reports `field 'footnote' has no declared role in mechanic 'sort'`.
-The gate walks strings only; see Limits.
+
+**The walk covers every scalar**, not only strings. It used to cover strings alone, which put
+the hole exactly where the role system was most needed: `semantic` is the role for `best` and
+`trick`, which are usually booleans, so the fields most likely to be added to a mechanic
+without updating its `roles` were the ones the check could not see. An undeclared
+`difficulty: 7` or `is_trick: true` passed silently and reported green. Numbers, booleans and
+nulls are now reported like anything else, with the value stringified:
+`field 'difficulty' has no declared role in mechanic 'sort' (value '7')`.
 
 Two roles exist because of specific damage. `deliberate_falsehood` was added after a corpus of
 4,661 struck myths went to a fact-check as ordinary visible text and every myth read as a false
@@ -106,13 +121,14 @@ scenarios. A declared field cannot be wrong that way; it can only be absent.
 
 Each audience carries:
 
-- `text_budget` — **required**, an integer. The longest any single visible field may be, counted
-  in grapheme clusters rather than code points: a cap calibrated on English is a much harsher
-  rule in Devanagari, so the count handles combining marks, viramas, ZWJ sequences and flag
-  pairs. It approximates UAX #29 rather than implementing it — Hangul jamo composition and
-  emoji modifier sequences are the known gaps.
-- `prose_budget` — optional. The maximum total visible length of one whole item. Omit it and the
-  total is unbounded; the per-field cap still applies.
+- `text_budget` — **required**, a positive whole number. The longest any single visible field
+  may be, counted in grapheme clusters rather than code points: a cap calibrated on English is
+  a much harsher rule in Devanagari, so the count handles combining marks, viramas, ZWJ
+  sequences and flag pairs. It approximates UAX #29 rather than implementing it — Hangul jamo
+  composition and emoji modifier sequences are the known gaps.
+- `prose_budget` — optional, and a positive whole number under the same test. The maximum
+  total visible length of one whole item. Omit it and the total is unbounded; the per-field cap
+  still applies.
 - `permits` — the mechanic ids this audience may use. Optional at load, and an audience that
   omits it permits nothing: the profile loads and then every item fails on permission with
   `mechanic 'sort' is not permitted for audience 'operator' (permitted: [])`. Permitting a
@@ -120,6 +136,13 @@ Each audience carries:
   silently acquires a verb nobody validated.
 - `min_age` — see below.
 - `label`, `notes`, `policy_packs` — carried, for people. Nothing enforces them.
+
+**A JSON `true` is not a budget.** Both budgets are refused unless they are positive whole
+numbers, and the boolean is refused explicitly. In Python a bool *is* an int, so a plain
+integer test accepted `true` and loaded it as a budget of 1 — every visible field longer than
+one grapheme then failed, from a file that looked fine. Zero and negative numbers are refused
+on the same reasoning: a budget that fails everything is indistinguishable from a gate that is
+broken.
 
 Budgets and permits are per audience, so the same mechanic can be tighter for one group than
 another. In the shipped early-years profile, `spot` is permitted for early readers and
@@ -155,8 +178,8 @@ mechanic, so adding a mechanic adds columns with no code change.
 
 | Kind | Requires | Checks |
 |---|---|---|
-| `count` | `field`, and one of `eq`/`min`/`max` — but `max` loads and is never evaluated, see Limits | how many values sit at a path |
-| `count_where` | `field`, `where`, and `eq` — `min`/`max` load and then block every item, see Limits | how many elements match `where` |
+| `count` | `field`, and any of `eq`/`min`/`max` | how many values sit at a path |
+| `count_where` | `field`, `where`, and any of `eq`/`min`/`max` | how many elements match `where` |
 | `unique` | `field` | no repeated values at a path |
 | `enum` | `field`, `values` | every value is in a closed set |
 | `key_covers` | `key`, `over`, `into` | the key covers every id and points nowhere else |
@@ -173,8 +196,25 @@ chance model take the same shape.
 Arguments are validated when the profile loads, not when content is checked. A profile that wrote
 `distinct` with `field` instead of `fields` once loaded happily and then crashed the checker once
 per item — 4,689 identical errors from one wrong word in one file. A rule whose arguments are
-missing is refused up front. Presence is not the same as executability: two kinds accept an
-argument the evaluator does not read, and both are listed under Limits worth knowing.
+missing is refused up front.
+
+**Loading a rule is not the same as running it**, and for a while two of these kinds did not run
+what they had accepted. `count` evaluated `eq` and `min` and ignored `max` outright, so a `max` of
+2 on a four-element collection produced no finding — a fail-open, reported green, from a rule the
+author had every reason to believe was live. `count_where` read `eq` unconditionally, so a rule
+written with `min` or `max` loaded without complaint and then raised `KeyError: 'eq'` on every
+item the mechanic covered, blocking the whole bank. Both now evaluate `eq`, `min` and `max`
+identically, and report in the same shape:
+
+```
+items[]: 3 (need at most 2)
+xs[] where {'b': True}: 1 (need at least 2)
+xs[] where {'b': True}: 2 (need at most 1)
+```
+
+Each branch is held by a test that fails if the branch is removed. That is the standing rule the
+episode bought: the loader refuses arguments it cannot execute, and the evaluator runs every
+argument the loader accepts.
 
 **Chance** declares how someone could get an item right by guessing: `uniform_choice` (needs
 `over`), `per_placement` (`over`, `into`), `subset_selection` (`over`, `where`) and `fixed` (`p`).
@@ -197,20 +237,31 @@ Each entry needs `ref` and `canonical`. `kind`, `forms` and `name_patterns` are 
 `name_pattern` that is not a valid regular expression is refused at load.
 
 Two things are then checked. A `resource_ref` field must name a resource you declared — content
-cannot invent one. And in visible prose, a resource's name followed directly by a number of three
-digits or more — a connective like "at", "on", "number", a colon or a dash may sit between them —
-must carry that resource's own value, matched against `canonical` and `forms` with spaces, hyphens
-and brackets ignored. That catches a real-sounding pairing that is wrong, without flagging a
-correct number that merely appears near other text.
+cannot invent one. And in visible prose, a resource's name followed directly by a value — three
+characters or more, carrying at least one digit, with a connective like "at", "on", "number", a
+colon or a dash allowed between them — must be that resource's own value, matched against
+`canonical` and `forms` with spaces, hyphens, brackets and letter case ignored. That catches a
+real-sounding pairing that is wrong, without flagging a correct value that merely appears near
+other text.
 
-The prose half of that is narrower than it sounds, in three ways that are easy to walk into:
+The prose half of that is narrower than it sounds, in two ways:
 
 - It only fires for resources that declare `name_patterns`. Declare none and the resource gets
   the `resource_ref` check and nothing else.
-- The value it looks for must start and end with a digit and run to at least three characters. A
-  resource whose canonical value is not a number in that shape — a policy code like `HR-114` — is
-  never checked in prose, whatever the content pairs it with.
-- One- and two-digit values are below the length floor and are not checked either.
+- A **wrong** value is only named if the run after the resource's name reaches three characters.
+  This bounds what the gate will *report*, not what it will *accept*: a correct citation is
+  matched at its own full length before any of this runs, so a resource whose canonical value is
+  long is checked normally.
+
+It used to be narrower still, in two ways, both silent. The captured value had to start *and*
+end with a digit, which meant a canonical that is not a plain number — a policy code like `HR-114` — was
+never checked in prose at all, whatever the content paired it with. That exempted a resource in
+this project's own reference profile without anyone noticing. A value may now carry letters and
+only has to contain a digit somewhere, which admits `HR-114`, `999` and `0800 555 0100` while
+leaving ordinary prose alone: "call the ethics line at reception" has no digit in it and is not a
+binding. Trailing words are trimmed off the capture, so `ethics line 0800 555 0100 to report`
+binds `0800 555 0100` rather than `0800 555 0100 to`. The comparison is case-folded, so `hr-114`
+written in prose is the same reference as a canonical `HR-114` and is not reported as a wrong one.
 
 A number you made up will pass every structural check and then ride out in a report that says the
 content is clean. Every resource needs a source and a verification date from a person. This is the
@@ -307,7 +358,9 @@ Each of these stops the load. Nothing is checked until it is fixed.
 - a required key is missing: `id`, `label`, `audiences`, `mechanics`
 - `roles` is empty, or a field is given a role outside the five
 - an audience permits a mechanic the profile does not declare
-- `text_budget` is not an integer, or `min_age` is not a whole number in 0–120
+- `text_budget` or `prose_budget` is not a positive whole number — a JSON `true`, a `0` and a
+  negative are all refused
+- `min_age` is not a whole number in 0–120
 - an invariant kind is unknown, or is missing an argument it needs
 - a chance kind is unknown, is missing an argument, or sits on an ungradeable mechanic
 - a resource entry has no `ref` or no `canonical`
@@ -318,42 +371,50 @@ Each of these stops the load. Nothing is checked until it is fixed.
 A field with no declared role is **not** on this list. That is caught per item when the content is
 gated, not when the profile loads.
 
+## What a report records about your profile
+
+Every gate report carries `profile.content_digest`: a digest of your declarations, not of your
+file's bytes. Reformat the JSON or reorder the keys and the digest is unchanged, so old reports still describe
+the profile you have. Change a budget, an age, a role or an invariant and it changes, so a report
+cannot quietly outlive the rule it was gating against.
+
+It digests the whole file's declarations, so **editing a `_doc` or `_note` comment changes it
+too**, even though nothing about the rules moved. That is the conservative direction: the digest
+can say a report is stale when it is merely re-worded, and never the reverse.
+
+It was once written only when the profile had been loaded from a path, which meant gating against
+a shipped profile by name produced a report binding the content and the code but not your declared
+budgets and ages — the half of the verdict a listing decision rests on. It is now computed at load
+and is always present. `file_digest`, the digest of the bytes, is still written in addition when
+you passed a path.
+
 ## Limits worth knowing
 
 These are things the format accepts and the code does not do. They are listed because a rule you
 believe is running and is not is worse than no rule.
 
-- **`count` evaluates `eq` and `min` only.** `max` is accepted by the loader and never evaluated:
-  a `max` of 2 on a four-element collection produces no finding. The template generator does read
-  it, to size a sheet, so a `max` you write will change how many columns you get and will still
-  not be enforced against your content.
-- **`count_where` evaluates `eq` only.** Declared with `min` or `max` and no `eq`, it loads
-  without complaint and then reports `GATE CRASHED (KeyError): 'eq'` on every item the mechanic
-  covers — and a check that cannot run counts as a failure, not a skip, so the bank blocks
-  entirely. Spell the count with `eq`.
-- **The undeclared-field check walks strings only.** A field nobody declared that holds a number
-  or a boolean — `difficulty: 7`, `is_trick: true` — carries no role and is never reported. This
-  is awkward precisely where it matters: `semantic` is the role for `best` and `trick`, which are
-  usually booleans, so the fields most likely to be added to a mechanic without updating its
-  `roles` are the ones this check cannot see. The guarantee is over the text a person reads, not
-  over every field in the item.
-- **Prose resource binding is narrow.** It needs `name_patterns`, and it only inspects values
-  that start and end with a digit and run to three characters or more. See Resources above.
+- **A missing `[]` in a field path is silent.** `count` on `items` counts the list as one value;
+  `unique` on `items.id` checks nothing at all. Neither errors. See
+  [Field paths](#field-paths) for which kinds resolve literally.
+- **`--audience` overrides each item's own `audience` field.** It does not fill in for items that
+  lack one — it replaces every item's. Gate a mixed bank with one audience named on the command
+  line and every item is silently checked against that audience's budgets and permits, including
+  the items that declared a different one.
+- **A listing verdict appears in a report only when the check names an audience.** If items carry
+  their own `audience` field instead, the gates all run and you get gate results with no listing
+  verdict at all. Naming an audience the profile does not declare is not a pass either: the
+  report records `audience_unknown`, and says which id it could not find.
 - **An audience with no `permits` blocks everything.** It loads clean and then fails every item on
-  permission.
+  permission. This is deliberate — a verb nobody granted is not a verb you have — but it looks
+  like a broken gate the first time you meet it.
 - **`locale`, `valences`, `policy_packs` and `notes` are read into the profile and enforced by
   nothing.** `locale` in particular does not select the grapheme counter or the framing rules; it
   is a label for people. To have a closed set of valences enforced, write it as an `enum`
   invariant with the values spelled out.
-- **A listing verdict appears in a report only when the check names an audience.** If items carry
-  their own `audience` field instead, the gates all run and you get gate results with no listing
-  verdict at all.
-- **The profile digest is written only when the profile was loaded from a file path.** Gate
-  against a profile by name and the report binds the content and the code but not your declared
-  budgets and ages.
-- **`text_budget` accepts a JSON `true`.** It is checked with an integer test, and in Python a
-  boolean is an integer — so `true` becomes a budget of 1. `min_age` rejects booleans explicitly;
-  `text_budget` does not.
+- **`code_version` hashes the gate code, the loader and the template generator together.** A
+  change to the authoring-sheet generator alone changes the `code_version` on a gate report it
+  could not have affected. Two reports sharing a `code_version` did run identical gate logic; two
+  differing may still have.
 - **Nothing yet helps you write a profile.** You hand-write the JSON. The template generator goes
   the other way — profile in, authoring sheet out — which proves the format is rich enough to
   drive an editor, but that editor does not exist, and neither generator nor checker is something

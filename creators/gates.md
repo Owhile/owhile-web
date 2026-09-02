@@ -35,10 +35,20 @@ profile differs.
 
 **There is no `owhile` command.** The name is registered on PyPI and holds an empty placeholder —
 installing it gives you nothing to run. The gates are Python modules in a private repository, with
-126 tests that are mutation-tested: disabling any of the five gates, reverting the grapheme counter
-to `len`, or making an unknown mechanic fail open each kills at least one test. What is published
-here is the **contract** — what is checked, and what each failure means. It is implemented; the
-command that will wrap it is not. When it exists, this page will name it.
+193 tests — 161 over the gates, 32 over the sheet layer — that are mutation-tested: disabling any of
+the five gates, reverting the grapheme counter to `len`, making an unknown mechanic fail open, or
+reverting any one of the fixes described on this page each kills at least one test. What is
+published here is the **contract** — what is checked, and what each failure means. It is
+implemented; the command that will wrap it is not. When it exists, this page will name it.
+
+**Seven defects in these gates were found by writing this page.** Having to state what a check does
+turned out to be a harder audit than reading the code, because a page that must describe a feature
+cannot leave a feature that does nothing unnoticed. The worst of them was a declared rule that
+loaded clean and was never evaluated — a fail-open inside a system whose whole claim is that it
+fails closed. All seven are fixed, each with a test that fails when the fix is reverted, and the
+suite went from 126 tests to 193. Each is described below in the section for the check that used to
+be weaker, rather than collected into a footnote, because what a check got wrong once is part of
+knowing what it proves now.
 
 ## Where these run
 
@@ -64,7 +74,7 @@ explicit `::int` or `::float` suffix on the column header is the escape hatch.
 
 | Gate | Proves |
 |---|---|
-| `role_totality` | Every *string* in the item has a declared role. |
+| `role_totality` | Every *value* in the item has a declared role. |
 | `invariants` | The profile's structural rules — counts, uniqueness, enums, key coverage. |
 | `permissions` | This audience is allowed this mechanic. |
 | `budgets` | Visible text fits this audience's reading budget, counted in graphemes. |
@@ -76,27 +86,41 @@ the same mistake four hundred times. Most findings are prefixed with the item id
 `dedup_prose` names a pair of ids rather than one.
 
 A malformed profile stops the run before any of this: an invariant missing its arguments, an
-audience permitting an undeclared mechanic, or a field with a role that is not one of the five is
-refused at load time. One profile wrong in one word once produced 4,689 identical crashes by being
-checked too late. One invariant kind still escapes that discipline — see [Known
-limits](#known-limits).
+audience permitting an undeclared mechanic, a reading budget that is not a positive whole number, or
+a field with a role that is not one of the five is refused at load time. One profile wrong in one
+word once produced 4,689 identical crashes by being checked too late.
+
+The loader's rule is that **it refuses a rule the gates cannot execute** — never skips it, never
+crashes on it once per item. That was true of the loader and, for a while, not of the evaluator:
+the two kept independent lists of which invariant arguments were legal, and the lists drifted.
+`count` accepted a `max` it never evaluated, and `count_where` accepted a `min` it then crashed on.
+Both are fixed. The fix that matters is neither of them: **every argument the loader accepts is now
+tested to enforce something**, with a violating *and* a satisfying item for each, because an ignored
+argument looks identical to a satisfied one and a rule that always fails proves nothing either. That
+test fails if the loader ever grows a kind or an argument the table does not cover, so the two lists
+cannot drift apart again.
 
 ### `role_totality` — nothing goes unread
 
 Your profile annotates each field of each mechanic with a role: `visible`, `deliberate_falsehood`,
-`semantic`, `opaque` or `resource_ref`. This gate walks every **string** in the item and checks that
-a declared path covers it; a declared path covers itself and everything beneath it. The id field, the
-mechanic field and `audience` are exempt. It fails when an item carries a string the mechanic does
-not declare — a field you invented, or one added to the mechanic without updating its roles.
+`semantic`, `opaque` or `resource_ref`. This gate walks every **scalar** in the item — strings,
+numbers, booleans and nulls — and checks that a declared path covers it; a declared path covers
+itself and everything beneath it. The id field, the mechanic field and `audience` are exempt. It
+fails when an item carries a value the mechanic does not declare — a field you invented, or one
+added to the mechanic without updating its roles. The value is stringified in the message.
 
 ```
 r-001: field 'tone' has no declared role in mechanic 'reflect' (value 'warm')
+r-002: field 'difficulty' has no declared role in mechanic 'sort' (value '7')
+r-003: field 'is_trick' has no declared role in mechanic 'reflect' (value 'True')
 ```
 
 Add the field to the profile if it is real; delete it from the item if it is not.
 
-It walks strings only. A field holding a number or a boolean is not reported — see [Known
-limits](#known-limits).
+This gate used to walk strings only, which sounds like a narrow gap and was not. `semantic` is the
+documented role for `best` and `trick`, and those are booleans — so the fields the role system most
+exists to force into the open were exactly the ones it could not see when they went undeclared. An
+invented `difficulty: 7` or `is_trick: true` now reports like any other unroled field.
 
 Do not reach for `opaque` to silence a finding. `opaque` means never shown and never budgeted, so
 text hidden there is skipped by `budgets` and by both checks in `resources` — and it also drops out
@@ -127,12 +151,15 @@ v-001: key points at undeclared target(s) ['nonexistent']
 
 Each kind, and the text it emits:
 
-- `count` — `items[]: 2 (need exactly 6)` or `items[]: 2 (need at least 4)`
+- `count` — takes `eq`, `min` and `max`, and all three are evaluated:
+  `items[]: 2 (need exactly 6)` / `items[]: 2 (need at least 4)` / `items[]: 3 (need at most 2)`
 - `unique` — `items[].id: duplicate values`
 - `enum` — `bins[].valence: 'WRONG' not in ['caution', 'neg', 'neutral', 'pos']`
 - `key_covers` — `key does not cover ['c']` / `key points at undeclared target(s) ['nonexistent']`
 - `exactly_one` — `options: 2 matching {'best': True} (need exactly 1)`
-- `count_where` — `options[] where {'best': True}: 2 (need exactly 1)`
+- `count_where` — takes `eq`, `min` and `max` too, exactly as `count` does:
+  `options[] where {'best': True}: 2 (need exactly 1)` /
+  `xs[] where {'b': True}: 1 (need at least 2)` / `xs[] where {'b': True}: 2 (need at most 1)`
 - `member_of`, `subset_of` — `answer='x' not among parts[] ['a', 'b']`; `key[] has value(s) not present in pieces[]: …`
 - `distinct` — `pieces[] has repeated element(s): …` / `fields ['left', 'right'] must differ from each other`
 
@@ -140,6 +167,10 @@ These are the commonest failures and the cheapest to fix: each message names the
 number it wanted. `key_covers` fails both when your key misses an item and when it names no such bin.
 `count_where` and `exactly_one` ask a similar question and print different strings, so grep for the
 right one.
+
+Write the `[]` and check that you did. A field path is not validated against the mechanic's declared
+shape, so `count` on `items` counts the list itself as one value and `unique` on `items.id` checks
+nothing at all — see [Known limits](#known-limits).
 
 ### `permissions` — this audience, this mechanic
 
@@ -154,6 +185,10 @@ This is a profile decision, not an authoring one. In the early-years reference p
 permitted for early readers and forbidden for pre-readers — a small child hunting for the dangerous
 thing is a different act. Either the item uses the wrong mechanic, or your profile should permit it.
 
+An audience that declares no `permits` list at all permits nothing, and every one of its items fails
+here. That is the intended direction — a missing permission list is not read as "allow everything" —
+but it is the one profile mistake whose symptom appears once per item rather than once at load.
+
 ### `budgets` — how much text at once
 
 Two limits, both from the audience. `text_budget` caps any single visible field. `prose_budget`, if
@@ -163,6 +198,18 @@ you set one, caps total visible text across the whole item.
 v-003: prompt: 165 graphemes (budget 90 for pre-reader)
 p-001: item prose 1475 graphemes (budget 900 for staff)
 ```
+
+Both budgets must be declared as positive whole numbers, and the loader refuses anything else:
+
+```
+audience 'staff': 'text_budget' must be a positive whole number of graphemes, got True
+```
+
+That refusal is newer than the budgets are. The check used to be `isinstance(x, int)`, and in Python
+a bool **is** an int — so `text_budget: true` loaded as a budget of one grapheme, and every visible
+field longer than a single character failed for a reason the message never mentioned. `0` and
+negative numbers are refused for the same reason: a budget that fails everything is
+indistinguishable from a gate that is broken.
 
 Only `visible` and `deliberate_falsehood` fields count. A myth the content teaches a reader to
 reject is still text they read, so it is budgeted. It is also framing-checked and resource-checked
@@ -186,17 +233,28 @@ Hangul jamo composition and emoji modifier sequences are the known gaps.
 v-002: policy_ref: unknown resource ref 'hr.policy-INVENTED'; declared: ['hr.ethics-line', 'hr.policy-harassment']
 ```
 
-**A resource named in visible prose, immediately followed by a number, must carry that resource's
-own value.** This catches a real-sounding pairing that is wrong, without flagging a correct value
-that merely appears near other text.
+**A resource named in visible prose, immediately followed by a value, must carry that resource's own
+value.** This catches a real-sounding pairing that is wrong, without flagging a correct value that
+merely appears near other text.
 
 ```
 v-003: prompt: 'hr.ethics-line' bound to '0800 555 9999' (canonical 0800 555 0100)
+v-004: prompt: 'hr.policy-harassment' bound to 'HR-999' (canonical HR-114)
 ```
 
-The match is on a digit run, so only numeric values are checked at all. A registered resource whose
-canonical value is not a number, and a resource that declares no name patterns, are never
-binding-checked — see [Known limits](#known-limits).
+The captured value must contain **at least one digit**. That admits a phone number and a policy code
+like `HR-114`, and keeps ordinary prose out: "call the ethics line at reception" names no value and
+is not a binding. Trailing words carrying no digit are trimmed off the capture, so
+`ethics line 0800 555 0100 to report` binds `0800 555 0100` rather than `0800 555 0100 to`.
+Comparison ignores case, spaces, hyphens and slashes, so an item writing `hr-114` is citing `HR-114`
+and is not reported.
+
+This check used to be narrower in a way that mattered. The captured value had to *start and end*
+with a digit, which meant a resource whose canonical value is not a number was never checked at all
+— including `hr.policy-harassment` in the workplace reference profile behind the examples on this
+page. It was registered, it looked enforced, and an item citing "the harassment policy HR-999"
+passed. A resource that declares no name patterns is still never binding-checked: the match reads
+the names, so a resource with none is registered but unenforced in prose.
 
 **Denied framing is reported by this same gate.** Every pattern in your `framing_denylist` is
 matched against every `visible` and `deliberate_falsehood` field — the same text the budgets count. A
@@ -209,7 +267,7 @@ v-002: prompt: framing denied for this profile — '\\bchairman\\b' in 'The chai
 
 The doubled backslashes are real output, not a typo here — the pattern is printed as a Python repr.
 
-Note what this gate cannot do. It checks that a number you name is the number you registered; it has
+Note what this gate cannot do. It checks that a value you name is the value you registered; it has
 no idea whether what you registered is real. That verification is yours, and it is the most
 dangerous thing here to hand to an agent — an invented helpline clears every structural check.
 
@@ -283,16 +341,24 @@ identically.
 ## The report
 
 A run can emit a machine-readable JSON report: the verdict, per-gate status with a sample of
-findings, the bank rules that fired, and totals. Two fields in it matter more than the verdict.
-**`bank.content_digest`** is a digest of the bank, order-independent — re-serialising it does not
-invalidate the report, changing one character of one item does. **`code_version`** is a digest of
-the gate source itself: two reports with the same value came from byte-identical checking logic, two
-with different values did not, whatever version numbers either claims. Together they answer the only
-question a third party has — *was this verdict about the bank I am holding, and by which rules?*
+findings, the bank rules that fired, and totals. Three digests in it matter more than the verdict,
+and together they answer the only question a third party has — *was this verdict about the bank I am
+holding, produced by which rules, under whose declarations?*
 
-A third digest, **`profile.file_digest`**, binds the report to the declared budgets and audiences —
-but it is written only when the profile was loaded from a file path. Gate against a shipped profile
-by name and the report carries no profile digest at all. Pass the path if you want all three.
+**`bank.content_digest`** is a digest of the bank, order-independent — re-serialising it does not
+invalidate the report, changing one character of one item does.
+
+**`code_version`** is a digest of the gate source itself: two reports with the same value came from
+byte-identical checking logic, two with different values did not, whatever version numbers either
+claims. It hashes the gate module, the profile loader and the sheet layer together, so it identifies
+the checking logic as a whole rather than one gate — a change anywhere in the three moves it.
+
+**`profile.content_digest`** binds the report to the declared budgets, audiences and rules, and is
+**always present**. It digests the declarations rather than the file, so reformatting a profile does
+not invalidate its reports and changing a rule does. It replaced `profile.file_digest`, which
+digested the file bytes and was written **only** when the profile happened to be loaded from a path
+— so gating against a shipped profile by name produced a report with no profile binding at all,
+while this page promised one. `file_digest` is still written in addition when you pass a path.
 
 A run that finds anything exits non-zero, so it fails a build step with nobody reading the output.
 There is nowhere to send a report yet; see [Listing](https://owhile.vercel.app/creators/listing.md)
@@ -327,31 +393,33 @@ an eligible verdict.
 
 Said plainly, because a check you think you have is worse than one you know you lack.
 
-- **`max` on a `count` invariant is accepted and never evaluated.** A profile declaring an upper
-  bound loads without complaint and the bound never fires. A `count` with `max: 2` over three
-  elements passes. Only `eq` and `min` are evaluated; use `eq` for an exact count.
-- **`count_where` evaluates `eq` only.** The loader accepts `eq`, `min` or `max`. Declared with
-  `min` or `max` and no `eq`, it loads clean and then reports `GATE CRASHED (KeyError): 'eq'` on
-  every matching item. It blocks — a check that cannot run is a failure, not a skip — but it blocks
-  for the wrong reason and after load, which is exactly the class of defect load-time validation
-  exists to prevent. Always spell `count_where` with `eq`.
-- **`role_totality` walks strings only.** A field an author invents that holds a number or a boolean
-  — `difficulty: 7`, `is_trick: true` — carries no role and is never reported. This is awkward
-  rather than incidental: `semantic` is the documented role for `best` and `trick`, which are
-  typically booleans, so the fields most likely to be added to a mechanic without updating its roles
-  are the ones this gate cannot see. The guarantee is over the text a person reads, not over every
-  field in the item.
-- **Resource binding only checks numbers.** The matcher looks for a digit run after the resource's
-  name, and the captured value must start and end with a digit. A resource whose canonical value is
-  not numeric — a policy code like `HR-114` — is registered but never verified in prose: an item
-  reading "See the harassment policy HR-999" passes. A resource that declares no name patterns is
-  never matched at all.
+Five entries stood here on 2026-09-02 and are gone because the defects behind them are fixed. Each
+is described in the section for the check it belonged to rather than deleted outright: `count` and
+`count_where` now evaluate every argument the loader accepts, `role_totality` walks every scalar,
+resource binding checks non-numeric values, and the report always carries a profile digest. These
+remain.
+
+- **A missing `[]` in a field path is not caught.** Invariant paths are not validated against the
+  mechanic's declared shape. `count` on `items` rather than `items[]` counts the list itself as one
+  value, so the count is `1` whatever the array holds: a `max` bound always passes, an `eq` or `min`
+  above 1 always fails, and neither answer has anything to do with your content. `unique` on
+  `items.id` rather than `items[].id` resolves to nothing and reports nothing. The `max` and the
+  `unique` are the dangerous half, because they look like a rule that is being enforced. Write the
+  `[]`, and do not trust an invariant you have never seen fail.
+- **`--audience` overrides each item's own `audience` field.** Giving a run one audience does not
+  restrict it to items declaring that audience; it checks every item against it. Gating a mixed bank
+  that way silently applies one set of budgets and permissions to content written for another.
 - **The `listing` block is written only when the run is given an audience.** It is not derived from
   each item's own `audience` field, so the ordinary per-item way of working produces a report with
   no listing verdict. A `pass` verdict with no listing block is not an eligibility finding.
-- **`profile.file_digest` is written only when the profile was loaded from a path.** Gate against a
-  profile by name and the report binds the content and the code, but not the declared budgets and
-  ages.
+- **An audience that omits `permits` permits nothing.** The profile loads clean and then every one
+  of that audience's items fails `permissions`. This is the fail-closed direction and it is
+  intended; it is listed here only because the symptom arrives once per item rather than at load.
+- **A resource that declares no name patterns is never binding-checked.** The prose match reads the
+  resource's names, so one with none is registered — and enforced as a `resource_ref` — but never
+  verified where it is written out.
+- **`locale` is stored and read by nothing.** A profile may declare one; no gate consults it. Nothing
+  here adapts a rule to a language.
 - **The corpus proof covers four gates, not five.** The gates ran over a real 29,365-item corpus
   across 69 banks with zero findings and zero crashes on `role_totality`, `invariants`, `permissions`
   and `budgets`. That run used an empty resource registry, so `resources` is proven by the reference

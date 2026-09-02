@@ -34,12 +34,12 @@ around any of it.
 
 - The eligibility rule. It decides whether a bank gated for a given audience may appear on a
   general-audience catalogue. Adults only, declared rather than inferred, failing closed.
-  Three of its verdicts — adult, child-facing and undeclared age — are each asserted in the
-  gate test suite, along with the rule that a small reading budget never implies a child.
-  That suite runs 94 checks; with the authoring-sheet suite the repository runs 126, and all
-  of them pass. The fourth verdict, `audience_unknown`, is implemented but has no test.
+  All four of its verdicts — adult, child-facing, undeclared age and unknown audience — are
+  each asserted in the gate test suite, along with the rule that a small reading budget never
+  implies a child. That suite runs 159 checks; with the authoring-sheet suite the repository
+  runs 191, and all of them pass.
 - The report format that carries that verdict, bound by digest to the exact content it
-  describes and to the exact code that checked it.
+  describes, to the profile that declared the audience, and to the exact code that checked it.
 
 **Not built. Not in beta, not behind a flag, not a form we have not linked yet:**
 
@@ -111,7 +111,9 @@ down in its place. An unknown audience is never a default.
 ```
 
 Calling the eligibility check directly with an unknown audience raises an error rather than
-returning that object. Only the report manufactures it.
+returning that object. Only the report manufactures it. Three checks hold that path: that the
+verdict is not eligible, that the reason is `audience_unknown` rather than an age verdict, and
+that the detail names the audience you got wrong.
 
 ---
 
@@ -153,7 +155,10 @@ accented letter counts once regardless of how many bytes it takes. The setup run
 "characters" for the same measure.)
 
 The value is validated when the profile loads, not when the listing is checked: `min_age` must
-be a whole number from 0 to 120. Strings, floats and booleans are refused at load.
+be a whole number from 0 to 120. Strings, floats and booleans are refused at load. The budgets
+are held to the same standard — `text_budget` and `prose_budget` must be positive whole
+numbers, and a boolean is refused explicitly, because in Python a `true` is an integer and it
+used to load as a budget of one grapheme.
 
 ### Fail closed
 
@@ -181,8 +186,9 @@ Abridged, from a real report over a one-item bank gated for an audience declarin
 {
   "schema": "praxis.gate-report/1",
   "verdict": "pass",
-  "code_version": "89753a1fc7791314",
+  "code_version": "b48e810a5c171213",
   "audience": "a",
+  "profile": { "id": "t", "content_digest": "c84bc6b57be62bec906d8954f64ec273" },
   "bank": { "items": 1, "content_digest": "97b37629a601b5c8582687bf8c236f8b" },
   "listing": {
     "eligible": false,
@@ -203,20 +209,27 @@ A listing needs a report that is provably about the content being listed. The re
 does that work, and it is the reason a report cannot be detached from its bank or reused
 after an edit.
 
-Every report carries `"schema": "praxis.gate-report/1"` and two digests, plus a third when
+Every report carries `"schema": "praxis.gate-report/1"` and three digests, plus a fourth when
 the profile was loaded from a file path:
 
 | Field | Covers | Answers |
 |---|---|---|
 | `bank.content_digest` | every item in the bank | was this verdict about the content you are holding? |
+| `profile.content_digest` | the profile's declarations | were these the declared audiences, budgets and ages? |
 | `code_version` | the gate, profile-loader and authoring-sheet source | which code reached this verdict? |
-| `profile.file_digest` *(optional)* | the profile file, and only when one was loaded from a path | were these the declared audiences and budgets? |
+| `profile.file_digest` *(optional)* | the profile file as bytes, and only when one was loaded from a path | was it this exact file? |
 
 `bank.content_digest` is **order-independent**: it is built from the sorted per-item digests, so
 re-serialising a bank does not invalidate its report, while changing one character of one item
 does. That is the property that makes the report worth submitting. A digest that does not match
 what you serve means the report is stale or the content changed after gating, and it is
 detectable without anyone reading your bank.
+
+`profile.content_digest` has the matching property on the other side. It is computed when the
+profile loads, and it digests the **declarations** rather than the file bytes — so reformatting
+a profile, reordering its keys or reindenting it does not invalidate its reports, while changing
+one budget, one `min_age` or one invariant does. It is always in the report, including when the
+profile was loaded by name rather than from a path.
 
 `code_version` is a digest of the source that produced the verdict, not a version string
 somebody maintains — version strings drift from what actually ran. Two reports with the same
@@ -232,8 +245,10 @@ can do yourself yet — see Status.
 
 ## Known limits
 
-Four things in the report are less than they look, and four more bound what a `pass` is worth.
-All eight are confirmed against the current code. None is a plan; this is what runs today.
+Three things in the report are less than they look, and two bound what a `pass` is worth. All
+five are confirmed against the current code. None is a plan; this is what runs today. Five
+more were on this list and are now fixed — they are written up in the next section rather than
+deleted.
 
 **Limits in the report:**
 
@@ -242,36 +257,80 @@ All eight are confirmed against the current code. None is a plan; this is what r
   one. If you rely on that fallback, the gates still run and the report still reaches a
   verdict — but the report's `audience` is `null` and there is **no `listing` key at all**.
   Absent is not eligible. If you are producing a report for a human to keep, name the audience.
-- **`profile.file_digest` is written only when the profile was loaded from a path.** Load a
-  shipped profile by name and the report binds the content and the code but not the declared
-  budgets and ages. Pass the file path if you want all three digests.
+- **`profile.file_digest` is written only when the profile was loaded from a path.** This is no
+  longer the difference between a profile binding and none — the declarations are always bound.
+  It is the difference between "these were the rules" and "this was the file". Pass the path if
+  you want both.
 - **`code_version` is not a digest of the gate logic alone.** It hashes three files — the
   gates, the profile loader and the authoring-sheet builder — so editing the sheet builder
   changes the digest while every gate is byte-identical.
-- **The `audience_unknown` branch has no test.** The other three verdicts are asserted; this
-  one is implemented and reproducible but uncovered. Treat it as working code that nothing
-  yet holds to its behaviour.
 
 **Limits in the gates the report certifies:**
 
-- **`max` on a `count` invariant is accepted and never enforced.** The loader takes `eq`,
-  `min` or `max`; the gate evaluates only `eq` and `min`. A mechanic declaring
-  `{"kind": "count", "field": "options[]", "max": 2}` loads without complaint, and an item
-  with four options passes. If you need a ceiling, spell it as `eq`.
-- **`count_where` evaluates `eq` only.** Declared with `min` or `max` alone it loads clean and
-  then reports `GATE CRASHED (KeyError): 'eq'` on every item. A gate that cannot run is a
-  failure rather than a skip, so this blocks the whole bank instead of passing it — noisy, but
-  not silent. Spell the count with `eq`.
-- **`role_totality` walks strings only.** A field an author invents that holds a number or a
-  boolean — `difficulty: 7`, `is_trick: true` — carries no declared role and is never
-  reported. The guarantee is over the text a person reads, not over every field in the item.
-  That matters here because the roles most likely to be added without updating a mechanic,
-  `best` and `trick`, are usually booleans.
-- **The resource-binding check only reads numeric values.** It flags a resource's name followed
-  by a wrong value, but the pattern it matches must start and end with a digit. A canonical
-  value that is not a number is never checked: the reference workplace profile declares a
-  policy with the canonical value `HR-114`, and prose reading "the harassment policy HR-999"
-  passes without a finding. A wrong phone number is caught; a wrong policy code is not.
+- **A missing `[]` in a field path is silent.** `{"kind": "count", "field": "items", "max": 4}`
+  counts the list as a single value, so a nine-element list satisfies it; `{"kind": "unique",
+  "field": "items.id"}` resolves to nothing and checks nothing. Both load clean, because the
+  loader cannot tell a path that names one field from a path that meant every element of a
+  list. Write `items[]` when you mean every element, and read a rule that never fires as a
+  suspect rather than as a pass.
+- **Naming an audience overrides each item's own.** The top-level audience wins wherever it is
+  given; an item's `audience` field is only the fallback for items when none is named. So
+  gating a mixed bank against one audience silently checks every item against that one — and
+  the listing verdict is about that one audience too, not about the mix you actually shipped.
+  If your bank spans audiences, do not name one.
+
+---
+
+## Fixed, and what holds them fixed
+
+Seven defects are fixed — five of them were on this page's own limits list. They stay written
+down rather than quietly deleted, because a rule is worth what the record of its failures says it
+is worth. Three of the seven were **fail-open**: a rule that loaded, reported nothing, and looked
+exactly like a pass. The rest failed loudly, which is bad but not dangerous.
+
+Every fix below is asserted in the suite and mutation-tested. The suite went from 126 checks to
+193, and the 29,365-item corpus still gates to zero findings across all five gates.
+
+- **`max` on a `count` invariant is enforced.** It used to load and never run: a mechanic
+  declaring `{"kind": "count", "field": "items[]", "max": 2}` accepted an item with four
+  options and reported nothing anywhere. A three-element list against that rule now reports
+  `items[]: 3 (need at most 2)`.
+- **`count_where` takes `min` and `max`, not `eq` alone.** Declared with either one it used to
+  load clean and then crash with `KeyError: 'eq'` on every item — noisy rather than silent,
+  since a gate that cannot run counts as a failure, but it blocked banks whose profiles were
+  correct. All three bounds now evaluate exactly as they do on `count`:
+  `xs[] where {'b': True}: 1 (need at least 2)`, or `… (need at most 1)`.
+- **`role_totality` walks every scalar, not only strings.** An invented field holding a number,
+  a boolean or a null carried no declared role and was never reported. This was the worst of
+  the four, because the roles most likely to be added to an item without updating its mechanic
+  — `best`, `trick` — are usually booleans, so the fields the role system exists to force into
+  the open were exactly the ones it could not see. An undeclared `difficulty: 7` now reports
+  `field 'difficulty' has no declared role in mechanic 'sort' (value '7')`. The message is
+  unchanged; the value is stringified into it.
+- **Resource binding checks non-numeric values.** The pattern it matched had to start and end
+  with a digit, so a canonical value that is not a number was never checked at all — including
+  `HR-114` in this repository's own reference profile, where prose reading "the harassment
+  policy HR-999" passed without a finding. A captured value may now carry letters but must
+  contain at least one digit, so `HR-999` is caught while ordinary prose ("call the ethics line
+  at reception") is still not a binding. Trailing prose is trimmed off the capture, so "ethics
+  line 0800 555 0100 to report" binds `0800 555 0100`; and comparison is case-folded, so
+  `hr-114` reads as a correct citation of `HR-114` rather than a wrong one.
+- **Budgets are refused at load unless they are positive whole numbers.** A JSON `true` is an
+  integer in Python, so it loaded as a budget of one grapheme and then failed every visible
+  field in the bank — a profile mistake that read as broken content. `text_budget` and
+  `prose_budget` now refuse booleans, non-integers and anything at or below zero, at load.
+- **The report always carries a profile digest.** `profile.file_digest` needs a path, so a
+  report produced from a profile loaded by name used to bind the content and the code and
+  nothing about the declarations — while this page said every report bound all three.
+  `profile.content_digest` is computed at load and is always present.
+- **`audience_unknown` is tested.** The branch was implemented and reproducible, and nothing
+  held it to its behaviour, so a refactor that let the error escape — or that quietly recorded
+  `eligible: true` — would have been caught by no test at all. Three checks now cover it.
+
+Two of these were the same shape: **the loader accepted a rule the gate could not execute.**
+That is the class the fixes closed, and it is why the loader is strict about things it could
+plausibly wave through — a bound it will not evaluate, a budget it cannot count with. A rule
+that loads is a rule that runs, or it does not load.
 
 ---
 

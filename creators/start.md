@@ -35,7 +35,7 @@ That is not a broken install and there is nothing to debug. Do not retry it, do 
 yet.
 
 **What is real.** The gates, the profile loader, the authoring loop and the report format
-are all built, tested (126 tests, mutation-tested) and proven across 29,365 items in two
+are all built, tested (193 tests, mutation-tested) and proven across 29,365 items in two
 opposite audiences. They live in a private repository and are driven by Python modules
 rather than by an `owhile` command. What is missing is the packaging and the CLI that
 wraps them — not the thing itself.
