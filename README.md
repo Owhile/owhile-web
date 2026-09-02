@@ -39,6 +39,22 @@ primitive, but a filter over an empty catalogue returns the same nothing at ever
 setting and teaches the visitor the site is empty in one click. The *question* ships as
 a statement; the *picker* turns on at ~12 experiences across three duration bands.
 
+## Production headers (`vercel.json`)
+
+Three of these exist specifically to serve agents, copying what Anthropic's and Stripe's
+docs actually send:
+
+- **`Link: rel="llms-txt"` and `rel="describedby"`** — both, because the ecosystem has not
+  converged. Mintlify emits the first; the llms.txt v2 spec says the second. They cost nothing.
+- **`X-Llms-Txt`** — what Anthropic's docs send. Belt and braces.
+- **`Content-Signal: search=yes, ai-train=yes, ai-input=yes`** — Stripe's posture. Worth
+  setting explicitly because **Cloudflare auto-inserts `ai-train=no` by default on millions
+  of domains**, and silently inheriting that would contradict the site's entire purpose.
+- **Explicit `Content-Type` on `llms.txt` and `start.md`** so they render rather than download.
+
+No `cleanUrls`, no `trailingSlash` rewriting: `llms.txt` publishes exact URLs and agents
+fetch them literally. A redirect hop is a failure mode with no upside here.
+
 ## Ship gates — this is not launchable yet
 
 1. **Hero "Step in"** needs one finished experience good enough to be the front door.
