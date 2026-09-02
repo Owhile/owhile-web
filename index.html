@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>owhile — go somewhere for a while</title>
+<meta name="description" content="Interactive experiences you step into rather than watch. Stories, simulations, games and experiments, sized to the time you actually have.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/owhile.css">
+<link rel="alternate" type="text/markdown" href="/llms.txt" title="Plain-text summary for language models">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "owhile",
+  "url": "https://owhile.ai",
+  "description": "A platform for interactive experiences — stories, simulations, games and experiments you step into rather than watch.",
+  "publisher": { "@type": "Organization", "name": "owhile" }
+}
+</script>
+</head>
+<body>
+
+<a class="sr-only" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="wordmark" href="/"><span class="o" aria-hidden="true"></span>owhile</a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="#platform">Platform</a>
+      <a href="#formats">Formats</a>
+      <a href="/creators/">Make something</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- The station. §4 — a quiet station at dusk; something approaches before it arrives. -->
+  <section class="station" aria-labelledby="hero-title">
+    <div class="station__far"  aria-hidden="true"></div>
+    <div class="station__mid"  aria-hidden="true"></div>
+    <div class="station__near" aria-hidden="true"></div>
+    <span class="lamp" style="left:12%;bottom:34%;animation-delay:-2s" aria-hidden="true"></span>
+    <span class="lamp" style="left:31%;bottom:37%;animation-delay:-5s" aria-hidden="true"></span>
+    <span class="lamp" style="left:58%;bottom:35%;animation-delay:-1s" aria-hidden="true"></span>
+    <span class="lamp" style="left:79%;bottom:38%;animation-delay:-4s" aria-hidden="true"></span>
+    <span class="approach" aria-hidden="true"></span>
+
+    <div class="wrap station__inner">
+      <h1 class="hero-title" id="hero-title">Go somewhere<br>for a while.</h1>
+      <p class="hero-sub">
+        Interactive experiences you step into rather than watch. Stories, simulations,
+        games and experiments — sized to the time you actually have.
+      </p>
+
+      <!-- §18: real signage carrying real navigation, not decoration. -->
+      <div class="board" role="group" aria-label="Next arrivals">
+        <div class="board__head">
+          <span class="signage">Next arrival</span>
+          <span class="signage">Platform 01</span>
+        </div>
+        <div class="board__row"><b>owhile</b> <span>2 min</span></div>
+        <div class="board__row"><b>Short ride</b> <span>under 10 min</span></div>
+        <div class="board__row"><b>Long journey</b> <span>an evening</span></div>
+      </div>
+
+      <p style="margin-top:2.5rem;display:flex;gap:.75rem;flex-wrap:wrap">
+        <a class="btn btn--solid" href="#platform">Step in</a>
+        <a class="btn" href="/creators/">Make something</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- §13: time as a product primitive. -->
+  <section id="platform" aria-labelledby="while-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="while-title">How long is your while?</h2>
+        <p>Start with the time you have. We'll find somewhere that fits it.</p>
+      </div>
+
+      <!-- SHIP GATE: the picker turns on at ~12 experiences across 3 duration bands.
+           Below that it returns the same set at every setting, which teaches the visitor
+           the catalogue is empty in a single click. Until then the question stands alone —
+           it is the brand asset; the filter is only a feature. -->
+      <p style="font-family:var(--font-display);font-size:var(--step-1);max-width:34ch">
+        Most things here run between eight and twenty minutes. Nothing is longer
+        than a train ride.
+      </p>
+
+      <!-- §26. There is no catalogue yet. The honest thing, in voice. -->
+      <div class="platform-quiet" id="results" style="margin-top:2.5rem">
+        <span class="o" aria-hidden="true"></span>
+        <h3>This platform is quiet.</h3>
+        <p>
+          There is nothing running yet. The first experiences are being built now —
+          and when a window appears here, someone made it. No waitlist, no beta,
+          nothing to sign up for.
+        </p>
+        <p style="margin-top:1.5rem">
+          <a class="btn" href="/creators/">Be the first stop</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §16: formats, not subjects. -->
+  <section id="formats" aria-labelledby="formats-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="formats-title">Pick a world.</h2>
+        <p>
+          Not ten subjects. Ten ways in. A physics simulation sits next to a surreal
+          little story, because what they share is that you do something.
+        </p>
+      </div>
+      <div class="formats">
+        <span class="format">Stories</span>
+        <span class="format">Games</span>
+        <span class="format">Simulations</span>
+        <span class="format">Experiments</span>
+        <span class="format">Mysteries</span>
+        <span class="format">Worlds</span>
+        <span class="format">Decisions</span>
+        <span class="format">Puzzles</span>
+        <span class="format">Conversations</span>
+        <span class="format">Adventures</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- §17: makers of experiences. The pathway, not a SaaS panel. -->
+  <section class="invitation" aria-labelledby="make-title">
+    <div class="wrap">
+      <div>
+        <h2 id="make-title" style="font-size:var(--step-2)">Made something? Bring it here.</h2>
+        <p style="margin-top:1rem;color:var(--fg-muted)">
+          Every window here was built by someone who wanted to find out what would happen.
+          You keep your work, your name, and your hosting if you want it.
+        </p>
+        <p style="margin-top:1rem;color:var(--fg-muted)">
+          Owhile is new, so here is the honest version: we can hand you the tools and a
+          place on the board. We cannot hand you an audience yet. That is the part we
+          are building.
+        </p>
+      </div>
+      <div>
+        <p class="signage">For makers</p>
+        <p style="margin-top:.75rem;color:var(--fg-muted)">
+          If you use an AI coding assistant, point it at this site and ask it to set you up.
+          It will read <code style="font-family:var(--font-signage);font-size:.85em">/llms.txt</code>
+          and do the rest.
+        </p>
+        <p style="margin-top:1.5rem"><a class="btn btn--solid" href="/creators/">See how it works</a></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span><span class="o" aria-hidden="true"></span> owhile</span>
+    <nav aria-label="Footer">
+      <a href="/creators/">Make something</a>
+      <a href="/creators/start.md">For machines</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+    <p style="flex-basis:100%;margin-top:1rem;color:var(--fg-faint)">
+      Owhile is for grown-ups. Things made for children aren&rsquo;t listed here.
+    </p>
+  </div>
+</footer>
+
+<script src="/assets/js/owhile.js" defer></script>
+</body>
+</html>

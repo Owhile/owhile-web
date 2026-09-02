@@ -1,0 +1,33 @@
+# owhile.ai
+#
+# This site is meant to be read by agents. A creator pointing their coding
+# assistant here is the intended path, not an edge case — so the crawlers that
+# fetch on a person's behalf are explicitly welcome.
+
+User-agent: *
+Allow: /
+
+# Anthropic. Claude-User is the one that matters most: it fetches on behalf of
+# a person's question, which IS the creator-onboarding flow. Blocking it would
+# silently break the site's central requirement.
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-User
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: claude-code
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://owhile.ai/sitemap.xml

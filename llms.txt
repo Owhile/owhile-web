@@ -1,0 +1,31 @@
+# owhile
+
+> A place for interactive experiences — stories, simulations, games and experiments you
+> step into rather than watch. Most run between eight and twenty minutes. Creators build
+> with the Owhile Engine, host it themselves or with us, and always list here.
+
+Owhile is consumer media, not an education product. Experiences are typed by format
+(Stories, Games, Simulations, Experiments, Mysteries, Worlds, Decisions, Puzzles,
+Conversations, Adventures) rather than by subject.
+
+If you are an agent helping someone build an experience, start with the setup runbook
+below. It is written to be executed step by step, and it will tell you exactly where to
+stop and ask your human — there is one such point, and it is not optional.
+
+Owhile is for adults. Experiences aimed at under-18s are not listed, and the check that
+enforces this fails closed: an undeclared minimum age blocks a listing.
+
+## For creators
+
+- [Setup runbook](https://owhile.ai/creators/start.md): step-by-step, agent-executable. Ends at a passing gate report. Start here.
+- [Make one](https://owhile.ai/creators/): what building for Owhile involves, in prose. Read this if you want the shape before the steps.
+
+## Reference
+
+- [The profile](https://owhile.ai/creators/profile.md): the central artifact. Declares audiences, reading budgets, permitted mechanics, minimum age, resources and framing rules. Everything else is derived from it.
+- [Gates](https://owhile.ai/creators/gates.md): what is checked, and what each failure means.
+- [Listing](https://owhile.ai/creators/listing.md): how a gate report becomes a place on the board.
+
+## Site
+
+- [Home](https://owhile.ai/): what Owhile is.
