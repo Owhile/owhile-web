@@ -250,8 +250,11 @@ a { color: inherit; }
 .station__inner {
   position: relative; z-index: 2;
   padding-block: var(--s-5);
-  max-inline-size: 30rem;
 }
+/* The scrim is darkest at the left, so the type lives there and the painting's
+   lit station stays visible on the right. Cap the children, not the wrap —
+   capping the wrap re-centres it into the brightest part of the image. */
+.station__inner > * { max-inline-size: 30rem; }
 
 .hero-title {
   font-size: var(--step-4);
@@ -304,7 +307,7 @@ a { color: inherit; }
   .station::before {
     background: linear-gradient(180deg, #060A12E8 0%, #060A129E 44%, #060A12DD 100%);
   }
-  .station__inner { max-inline-size: 100%; }
+  .station__inner > * { max-inline-size: 100%; }
   .hero-sub { max-inline-size: 30ch; }
 }
 
