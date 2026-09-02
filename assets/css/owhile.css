@@ -224,9 +224,17 @@ a { color: inherit; }
   min-block-size: min(94vh, 820px);
   display: grid; align-items: center;
   overflow: hidden;
-  background: url("/assets/station.svg") center / 100% 100% no-repeat, #0B1220;
+  background: #0B1220;
   color: #F5EFE4;
   isolation: isolate;
+}
+
+/* The source is an in-gallery photograph of an oil painting: green-cast and
+   flat. Graded on its own layer so the type above is untouched. */
+.station__art {
+  position: absolute; inset: 0; z-index: 0;
+  background: url("/assets/img/station.jpg") center 38% / cover no-repeat;
+  filter: saturate(1.12) contrast(1.1) brightness(1.06) hue-rotate(-8deg);
 }
 
 /* Legibility scrim behind the copy only. The right half stays clear so the
@@ -234,14 +242,15 @@ a { color: inherit; }
 .station::before {
   content: "";
   position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(100deg,
-    #060A12 0%, #060A12F2 30%, #060A12C4 44%, #060A1266 54%, transparent 66%);
+  background:
+    linear-gradient(96deg, #04070Efa 0%, #04070Eef 30%, #04070Ec9 46%, #04070E70 60%, #04070E12 76%, transparent 88%),
+    linear-gradient(#05080F55 0%, transparent 26%, transparent 62%, #05080Fcc 100%);
 }
 
 .station__inner {
   position: relative; z-index: 2;
   padding-block: var(--s-5);
-  max-inline-size: 34rem;
+  max-inline-size: 30rem;
 }
 
 .hero-title {
@@ -251,7 +260,7 @@ a { color: inherit; }
   text-shadow: 0 2px 30px #05080Faa;
 }
 .hero-sub {
-  color: #D8CFC0; max-inline-size: 33ch;
+  color: #D9D0C2; max-inline-size: 29ch;
   margin-top: var(--s-3); font-size: var(--step-1); line-height: 1.5;
 }
 
@@ -290,7 +299,7 @@ a { color: inherit; }
 
   .station {
     min-block-size: min(88vh, 640px);
-    background: url("/assets/station.svg") 72% bottom / auto 100% no-repeat, #0B1220;
+    background: url("/assets/img/station.jpg") 58% center / cover no-repeat, #0B1220;
   }
   .station::before {
     background: linear-gradient(180deg, #060A12E8 0%, #060A129E 44%, #060A12DD 100%);

@@ -25,6 +25,7 @@ python3 -m http.server 8765
 | `llms.txt` | Machine index, to the llms.txt **v2** spec (2026-08-10). |
 | `robots.txt` | Explicitly allows `Claude-User` — blocking it would break the site's whole point. |
 | `assets/css/owhile.css` | The design system. Every token traced to a section of the brand doc. |
+| `assets/img/station.jpg` | The hero. A public-domain 1925 night-railway painting — see [CREDITS](CREDITS.md). |
 
 ## Deliberate choices
 
