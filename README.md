@@ -54,8 +54,11 @@ docs actually send:
   of domains**, and silently inheriting that would contradict the site's entire purpose.
 - **Explicit `Content-Type` on `llms.txt` and `start.md`** so they render rather than download.
 
-No `cleanUrls`, no `trailingSlash` rewriting: `llms.txt` publishes exact URLs and agents
-fetch them literally. A redirect hop is a failure mode with no upside here.
+**No `cleanUrls`, no `trailingSlash` rewriting** — deliberately. `llms.txt` publishes exact
+URLs and agents fetch them literally, so a redirect hop is a failure mode with no upside.
+
+(Note for future edits: Vercel validates `vercel.json` against a strict schema that rejects
+unknown keys, so it cannot carry `"//"` comment entries. Explanations go here instead.)
 
 ## What turns on when
 

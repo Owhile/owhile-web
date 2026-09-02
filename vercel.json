@@ -1,31 +1,55 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-
-  "//": "No cleanUrls and no trailingSlash rewriting on purpose. llms.txt publishes exact URLs and agents fetch them literally — a redirect hop is a failure mode we do not need.",
-
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Link", "value": "</llms.txt>; rel=\"llms-txt\", </llms.txt>; rel=\"describedby\"" },
-        { "key": "X-Llms-Txt", "value": "/llms.txt" },
-        { "key": "Content-Signal", "value": "search=yes, ai-train=yes, ai-input=yes" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        {
+          "key": "Link",
+          "value": "</llms.txt>; rel=\"llms-txt\", </llms.txt>; rel=\"describedby\""
+        },
+        {
+          "key": "X-Llms-Txt",
+          "value": "/llms.txt"
+        },
+        {
+          "key": "Content-Signal",
+          "value": "search=yes, ai-train=yes, ai-input=yes"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
       ]
     },
     {
       "source": "/llms.txt",
       "headers": [
-        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
-        { "key": "Cache-Control", "value": "public, max-age=300" }
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300"
+        }
       ]
     },
     {
       "source": "/creators/start.md",
       "headers": [
-        { "key": "Content-Type", "value": "text/markdown; charset=utf-8" },
-        { "key": "Cache-Control", "value": "public, max-age=300" }
+        {
+          "key": "Content-Type",
+          "value": "text/markdown; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300"
+        }
       ]
     }
   ]
