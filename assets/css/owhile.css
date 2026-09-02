@@ -47,11 +47,11 @@
   --step-1:  clamp(1.25rem, 1.15rem + 0.45vw, 1.55rem);
   --step-2:  clamp(1.60rem, 1.40rem + 0.95vw, 2.30rem);
   --step-3:  clamp(2.10rem, 1.65rem + 2.10vw, 3.60rem);
-  --step-4:  clamp(2.70rem, 1.80rem + 4.20vw, 6.00rem);
+  --step-4:  clamp(2.60rem, 1.90rem + 3.20vw, 4.80rem);
 
   /* Space */
   --s-1: 0.5rem;  --s-2: 0.875rem; --s-3: 1.5rem;
-  --s-4: 2.5rem;  --s-5: 4rem;     --s-6: 6.5rem;
+  --s-4: 2.5rem;  --s-5: 4rem;     --s-6: 5rem;
 
   --radius:    14px;
   --radius-lg: 24px;
@@ -99,7 +99,8 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; overflow-x: hidden; }
+img, svg { max-inline-size: 100%; }
 
 body {
   margin: 0;
@@ -189,10 +190,11 @@ a { color: inherit; }
   border-block-end: 1px solid var(--rule);
 }
 .site-head .wrap {
-  display: flex; align-items: center; gap: var(--s-3);
+  display: flex; align-items: center; gap: var(--s-2) var(--s-3);
+  flex-wrap: wrap;                      /* the row itself must wrap, not just the nav */
   padding-block: var(--s-2);
 }
-.site-nav { margin-inline-start: auto; display: flex; gap: var(--s-3); align-items: center; }
+.site-nav { margin-inline-start: auto; display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; }
 .site-nav a {
   text-decoration: none; color: var(--fg-muted);
   font-size: var(--step--1);
@@ -200,85 +202,102 @@ a { color: inherit; }
 }
 .site-nav a:hover { color: var(--fg); }
 
+/* On the home page the header sits OVER the station. A light bar butted against
+   a dark scene read as a seam. */
+.site-head--over {
+  position: absolute; inset-inline: 0; top: 0;
+  background: transparent; backdrop-filter: none; border: 0;
+}
+.site-head--over .wordmark { color: #F5EFE4; }
+.site-head--over .site-nav a { color: #C6BEB2; }
+.site-head--over .site-nav a:hover { color: #FFFFFF; }
+
 /* --- 5. The station ----------------------------------------------------- */
-/* §4. A quiet station at dusk. Always dark regardless of theme: it is a
-   scene, not a surface — the same way a photograph does not invert. */
+/* §4. A quiet station at dusk, with a train waiting and its windows lit.
+   The scene is real drawn art (assets/station.svg). The first attempt used
+   three positioned divs for "depth" and rendered as a dark box with text on
+   it — no platform, no canopy, no train. Always dark regardless of theme:
+   it is a scene, not a surface, the same way a photograph does not invert. */
 
 .station {
   position: relative;
-  min-block-size: min(88vh, 760px);
-  display: grid; align-items: end;
+  min-block-size: min(94vh, 820px);
+  display: grid; align-items: center;
   overflow: hidden;
-  background: linear-gradient(#101A2C 0%, #1B2438 42%, #2A2C3A 74%, #17181F 100%);
+  background: url("/assets/station.svg") center / 100% 100% no-repeat, #0B1220;
   color: #F5EFE4;
   isolation: isolate;
 }
 
-/* Depth: three silhouette bands, nearest darkest. */
-.station__far, .station__mid, .station__near {
-  position: absolute; inset-inline: 0; bottom: 0; pointer-events: none;
-}
-.station__far  { block-size: 46%; background: #16203350; }
-.station__mid  { block-size: 30%; background: #0E1626A0; }
-.station__near { block-size: 15%; background: #080D16; border-block-start: 1px solid #2A3546; }
-
-/* Warm practical lights (§4). Slow, uneven breathing — never a pulse. */
-.lamp {
-  position: absolute; inline-size: 4px; block-size: 4px; border-radius: 50%;
-  background: #FFD9A0;
-  box-shadow: 0 0 14px 6px #FFC98033, 0 0 40px 18px #FFB85E1F;
-  animation: lamp-breathe 7s var(--ease-physical) infinite;
-}
-@keyframes lamp-breathe { 0%,100% { opacity: .78 } 50% { opacity: 1 } }
-
-/* The approaching light (§4, §10 "anticipatory"). It arrives before the
-   train does — the whole point of the scene. */
-.approach {
-  position: absolute; left: -14%; bottom: 17%;
-  inline-size: 10px; block-size: 10px; border-radius: 50%;
-  background: #FFF3DC;
-  box-shadow: 0 0 30px 14px #FFE6B880, 0 0 90px 46px #FFD79640;
-  animation: approach var(--dur-approach) var(--ease-physical) 900ms forwards;
-}
-@keyframes approach {
-  from { transform: translateX(0) scale(.55); opacity: 0 }
-  25%  { opacity: .9 }
-  to   { transform: translateX(46vw) scale(1.9); opacity: 1 }
+/* Legibility scrim behind the copy only. The right half stays clear so the
+   train and its lit windows are unobstructed — §5, they are the whole image. */
+.station::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(100deg,
+    #060A12 0%, #060A12F2 30%, #060A12C4 44%, #060A1266 54%, transparent 66%);
 }
 
-.station__inner { position: relative; z-index: 2; padding-block: var(--s-6) var(--s-5); }
+.station__inner {
+  position: relative; z-index: 2;
+  padding-block: var(--s-5);
+  max-inline-size: 34rem;
+}
 
 .hero-title {
   font-size: var(--step-4);
   font-variation-settings: "SOFT" 50, "WONK" 1;
-  max-inline-size: 15ch;
+  max-inline-size: 12ch;
+  text-shadow: 0 2px 30px #05080Faa;
 }
-.hero-sub { color: #CFC7BA; max-inline-size: 46ch; margin-top: var(--s-3); }
+.hero-sub {
+  color: #D8CFC0; max-inline-size: 33ch;
+  margin-top: var(--s-3); font-size: var(--step-1); line-height: 1.5;
+}
 
-/* The departure board (§4, §18). Real signage, not decoration: it carries
-   the actual navigation. */
+/* The departure board (§4, §18): real signage carrying real navigation. */
 .board {
   margin-top: var(--s-4);
-  border: 1px solid #33405480;
-  border-radius: var(--radius);
-  background: #0A101B99;
-  backdrop-filter: blur(6px);
-  padding: var(--s-3);
-  max-inline-size: 440px;
+  border: 1px solid #3B475C; border-radius: var(--radius);
+  background: #070C16D9; backdrop-filter: blur(8px);
+  padding: var(--s-3); max-inline-size: min(420px, 100%);
+  box-shadow: 0 20px 60px -30px #000;
 }
 .board__head {
   display: flex; justify-content: space-between; align-items: baseline;
-  border-block-end: 1px solid #2A3546; padding-block-end: var(--s-2);
+  border-block-end: 1px solid #38455A; padding-block-end: var(--s-2);
 }
+.board__head .signage { color: #C9A96A; }
 .board__row {
-  display: grid; grid-template-columns: 1fr auto;
-  gap: var(--s-2); padding-block: var(--s-2);
-  border-block-end: 1px solid #1E2836;
+  display: grid; grid-template-columns: 1fr auto; gap: var(--s-2);
+  padding-block: .7rem; border-block-end: 1px solid #1E2837;
   font-family: var(--font-signage); font-size: var(--step--1);
 }
 .board__row:last-child { border: 0; padding-block-end: 0; }
-.board__row b { font-weight: 500; color: var(--accent); letter-spacing: .04em; }
-.board__row span { color: #8892A0; }
+.board__row b { font-weight: 500; color: #F0E4CC; letter-spacing: .04em; }
+.board__row span { color: #93A0B2; }
+
+.hero-actions { margin-top: var(--s-4); display: flex; gap: .75rem; flex-wrap: wrap; }
+
+/* A tall narrow box would squash a 1440x800 scene. Crop toward the train
+   instead of distorting it, and let the scrim cover more of the frame. */
+@media (max-width: 720px) {
+  .wordmark { font-size: var(--step-0); }
+  .site-nav { gap: var(--s-2); font-size: var(--step--1); }
+  .site-nav a[href="#formats"] { display: none; }   /* three items do not fit; two do */
+  .board__row { font-size: 0.78rem; }
+  .board__head .signage { font-size: 0.7rem; letter-spacing: .1em; }
+
+  .station {
+    min-block-size: min(88vh, 640px);
+    background: url("/assets/station.svg") 72% bottom / auto 100% no-repeat, #0B1220;
+  }
+  .station::before {
+    background: linear-gradient(180deg, #060A12E8 0%, #060A129E 44%, #060A12DD 100%);
+  }
+  .station__inner { max-inline-size: 100%; }
+  .hero-sub { max-inline-size: 30ch; }
+}
 
 /* --- 6. Buttons --------------------------------------------------------- */
 
@@ -428,5 +447,4 @@ section { padding-block: var(--s-6); }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .approach { left: 32%; transform: none; opacity: 1; }
 }
