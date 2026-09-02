@@ -1,5 +1,7 @@
 # owhile-web
 
+> Public so it can be deployed and read. **Not open source** — see [LICENSE](LICENSE).
+
 The owhile.ai website. Static HTML/CSS — **deliberately no build step and no client-side
 rendering**, because the site's central requirement is that a creator can point a coding
 agent at it and have the agent set them up. An agent fetching a JS-rendered SPA gets an
