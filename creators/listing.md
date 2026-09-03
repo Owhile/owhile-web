@@ -45,16 +45,13 @@ around any of it.
 
 - Submission. There is no upload, no endpoint, no queue, no review, no account.
 - A board with entries on it. The catalogue is empty and the site says so on the front page.
-- An `owhile` command — or any other way for you to run these checks yourself. There is no
-  CLI. The published `owhile` package on PyPI is an empty `0.0.0` placeholder registered to
-  hold the name; installing it gives you no command. The gate code itself lives in a private
-  repository, so there is no library to import and no hosted checker either. **You cannot
-  produce a gate report today.** The rules below are built, tested and running — on our
-  side, not yet on yours.
 
-So you cannot list today, and nothing on this page tells you how to. What you can do today
-is design content that will satisfy the rule when there is somewhere to send it — which is
-worth doing, because the rule is the part that would otherwise send you back to the start.
+So you cannot list today, and nothing on this page tells you how to.
+
+What you **can** do is produce the report a listing will be built on. That part shipped:
+`pip install owhile`, then `owhile check --report report.json`. Keep it. When there is somewhere
+to send one, the rule it has to satisfy is the rule described below — which is the part that
+would otherwise send you back to the start.
 
 ---
 

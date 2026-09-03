@@ -15,42 +15,25 @@ time on. Your agent will stop and ask.
 
 ## Status — read this first
 
-**None of the commands on this page exist yet.** Not `owhile init`, not `owhile check`,
-not any of them. This page is the contract the tooling is being built against, published
-early so it can be argued with. It is not a working runbook, and today it cannot be
-followed to the end.
+**The tooling is published and this runbook runs.** `pip install owhile` installs version
+0.1.0 and gives you the five commands below. Every step on this page has been walked from a
+clean environment, ending in a `report.json` whose verdict is `pass`.
 
-**Agent: do not attempt this runbook.** Read it, and tell your human what it would do.
+Two things are worth knowing before you start.
 
-The trap is step 2. `pip install owhile` **will appear to succeed** — the name is
-registered on PyPI, but what is published there is an empty `0.0.0` placeholder holding
-the name. It installs nothing and provides no command, so the next line fails:
+**The command is much newer than the code under it.** The gates, the profile loader, the
+authoring loop and the report format are proven — 217 tests, mutation-tested, and run across a
+29,365-item corpus in two opposite audiences with zero findings. The `owhile` command wrapping
+them shipped in 0.1.0 and has had far less use. If something behaves oddly, it is more likely to
+be the wrapper than the gate, and worth telling us about.
 
-```
-owhile: command not found
-```
-
-That is not a broken install and there is nothing to debug. Do not retry it, do not try
-`python -m owhile`, do not go looking at your PATH. The package genuinely has no contents
-yet.
-
-**What is real.** The gates, the profile loader, the authoring loop and the report format
-are all built, tested (193 tests, mutation-tested) and proven across 29,365 items in two
-opposite audiences. They live in a private repository and are driven by Python modules
-rather than by an `owhile` command. What is missing is the packaging and the CLI that
-wraps them — not the thing itself.
-
-So the parts of this page worth your attention today are the **judgements**, not the
-commands: step 3 especially, and the reference pages on
-[the profile](https://owhile.vercel.app/creators/profile.md),
-[gates](https://owhile.vercel.app/creators/gates.md) and
-[listing](https://owhile.vercel.app/creators/listing.md). Those describe rules that
-are implemented and enforced.
-
-When `pip install owhile` resolves to something real, this notice disappears and every
-step below runs.
-
----
+**You cannot list yet.** There is no upload, no endpoint, no queue and no account — the board
+does not accept anything today. What a listing will require is decided and enforced: a gate
+report whose digest matches the content being listed, and an audience declaring `min_age` of 18
+or over. So this runbook ends at a passing report, which is the right place to stop; it is just
+not the same thing as being published.
+[Listing](https://owhile.vercel.app/creators/listing.md) says which parts are settled and which
+are not.
 
 ## Prerequisites
 

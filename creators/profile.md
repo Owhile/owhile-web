@@ -34,13 +34,13 @@ and an adult compliance bank without a line changing. Only the profile differs.
 
 ## Status — read this before you plan around it
 
-**There is no `owhile` command.** The name on PyPI is an empty placeholder holding the name;
-installing it gives you nothing to run. The checker is a set of Python modules that still
-live in a private repository, driven by two scripts rather than an installed tool.
+**You can install this.** `pip install owhile` gives you version 0.1.0 and the `owhile`
+command, and `owhile init` writes a starting profile in the shape this page describes. Adapt
+that rather than typing one from scratch.
 
 The contract on this page is real: it describes what the code does today, limits included.
-The loader, the gates and the report format are built and tested — 193 tests, mutation-tested;
-161 over the gates and loader, 32 over the authoring template — and proven across a
+The loader, the gates and the report format are built and tested — 217 tests, mutation-tested;
+161 over the gates and loader, 32 over the authoring template, 24 over the command — and proven across a
 29,365-item corpus in two opposite audiences, which still gates to zero findings across all
 five gates. That corpus run used an empty resource registry, so the resource rules on this
 page are proven by the test suite rather than by the corpus. Where a declared rule is accepted
@@ -49,7 +49,8 @@ is shorter than it was. Five rules this page used to document as accepted-but-no
 run. Where the history of one of those explains a design decision, it has been kept in the
 section the decision belongs to rather than deleted.
 
-Read this page as the format your file has to be in, not as a tool you can install today.
+Read this page as the format your file has to be in. The command will write you a valid one;
+what it cannot write is the judgement about who your work is for.
 [The setup runbook](https://owhile.vercel.app/creators/start.md) marks the same gap.
 
 ## Field paths
@@ -347,9 +348,10 @@ and is then reported as canonical.
 The shipped reference profiles carry `_doc` and `_note` keys explaining why a particular decision
 was made. Unknown keys are ignored, so this is a free place to write the reasoning down — worth
 doing, because the next person to widen a budget or permit a verb will want to know what the
-number was protecting. Those reference profiles are described on this page rather than linked:
-they live in the same private repository as the checker, and their registry values are
-illustrative too.
+number was protecting. Two of those reference profiles **ship with the package** — load them by name with
+`owhile profile check --profile early-years-safeguarding` or `--profile workplace-compliance`,
+and read them as worked examples of the same file this page describes. Their registry values are
+illustrative rather than verified, so do not copy a helpline number out of one.
 
 ## What the file is refused for
 

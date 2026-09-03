@@ -17,21 +17,20 @@ enforces this fails closed: an undeclared minimum age blocks a listing.
 
 ## Status
 
-The tooling is not installable yet. `pip install owhile` resolves, but only to an empty
-`0.0.0` placeholder registered to hold the name — it provides no command, so any runbook
-step that invokes `owhile` will fail with `command not found`. That is expected, not a
-broken install, and there is nothing to debug.
+The tooling is published and works: `pip install owhile` installs 0.1.0 and provides the
+`owhile` command. The setup runbook below has been walked end to end from a clean environment
+and ends in a passing gate report.
 
-The rules described on these pages are real: built, tested, and proven across 29,365
-items. The packaging that would let you run them is what is missing. Read these pages as
-a contract to review rather than a runbook to execute.
+Two caveats, both real. The command is far newer than the gates underneath it, which are proven
+across a 29,365-item corpus. And listing is not open — the eligibility rule and the digest
+binding are decided and enforced, but there is no submission path of any kind yet, so a creator
+can build and gate content today and cannot publish it here.
 
 ## For creators
 
-- [Setup runbook](https://owhile.vercel.app/creators/start.md): step-by-step, and written
-  to be agent-executable — but see Status above: it cannot be run to the end today. Read
-  it for the shape of the process and for step 3, which is a judgement no tool makes for
-  you. Start here.
+- [Setup runbook](https://owhile.vercel.app/creators/start.md): step-by-step and
+  agent-executable, ending in a passing gate report. It stops once at step 3 to ask your human
+  a question no tool should answer for them. Start here.
 - [Make one](https://owhile.vercel.app/creators/): what building for Owhile involves, in prose. Read this if you want the shape before the steps.
 
 ## Reference

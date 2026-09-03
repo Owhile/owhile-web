@@ -33,13 +33,14 @@ profile differs.
 
 ## How this runs today
 
-**There is no `owhile` command.** The name is registered on PyPI and holds an empty placeholder —
-installing it gives you nothing to run. The gates are Python modules in a private repository, with
-193 tests — 161 over the gates, 32 over the sheet layer — that are mutation-tested: disabling any of
-the five gates, reverting the grapheme counter to `len`, making an unknown mechanic fail open, or
-reverting any one of the fixes described on this page each kills at least one test. What is
-published here is the **contract** — what is checked, and what each failure means. It is
-implemented; the command that will wrap it is not. When it exists, this page will name it.
+**Run these with `owhile check`.** `pip install owhile` gives you version 0.1.0; point it at a
+bank and it runs every gate below and, with `--report`, writes the machine-readable verdict.
+
+There are 217 tests — 161 over the gates, 32 over the sheet layer, 24 over the command — and they
+are mutation-tested: disabling any of the five gates, reverting the grapheme counter to `len`,
+making an unknown mechanic fail open, or reverting any one of the fixes described on this page each
+kills at least one test. What this page publishes is the **contract**: what is checked, and what
+each failure means.
 
 **Seven defects in these gates were found by writing this page.** Having to state what a check does
 turned out to be a harder audit than reading the code, because a page that must describe a feature
