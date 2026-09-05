@@ -1,0 +1,60 @@
+name: Something is wrong with the owhile command
+description: A wrong verdict, a crash, a confusing message, or a wall you hit.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Before you write anything — one rule
+
+        **Do not paste the output of `owhile check`, and do not attach any file.**
+
+        A blocked run prints your item text and finding lines verbatim. If you work on
+        safeguarding material, that is a disclosure, and a GitHub issue is public and
+        permanent — deleting it later does not erase it from notification emails, the
+        API, or anyone's inbox.
+
+        Never post here: your item text · your sheet · `bank.ndjson` · `report.json` ·
+        the output of a blocked run · file paths · screenshots · any attachment.
+
+        You do not need any of that to file a useful report. If you think you do, use
+        the private route on the previous screen instead.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: >-
+        In your own words. What you ran, what you expected, what you got instead. Rule
+        names and finding *counts* are fine — "the resources gate fired 12 times and I
+        think it should not have". The finding text itself is not.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The output of `owhile --version`.
+      placeholder: owhile 0.1.1
+    validations:
+      required: false
+
+  - type: textarea
+    id: wall
+    attributes:
+      label: Was there something you could not do?
+      description: >-
+        Optional, and the most useful box on this form. If you stopped, worked around
+        it, or did something else instead — say what. We would rather hear about a wall
+        than a wish.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: safe
+    attributes:
+      label: Before you submit
+      options:
+        - label: >-
+            I have not included item text, file paths, a gate report, or any attachment.
+          required: true

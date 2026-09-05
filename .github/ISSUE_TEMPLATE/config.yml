@@ -1,0 +1,15 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Anything you cannot say in public
+    url: https://github.com/Owhile/owhile-web/security/advisories/new
+    about: >-
+      Use this if reporting the problem would mean showing us real content, a real
+      file path, or anything about a real person. It is private — only you and us.
+      It says "security advisory"; use it for any confidential report, not only
+      security ones.
+  - name: Something you saw in an experience on Owhile
+    url: https://owhile.vercel.app/
+    about: >-
+      Concerns about the content of a listed experience are not bug reports and do
+      not belong in a public tracker. Nothing is listed yet; when it is, there will
+      be a route from the listing itself.

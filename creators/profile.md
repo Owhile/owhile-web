@@ -175,6 +175,20 @@ The same declarations drive the authoring template: the sheet's columns, how man
 collection repeats, and what the answer-key columns are called are all read back out of the
 mechanic, so adding a mechanic adds columns with no code change.
 
+**You can invent one, and you do not need our permission.** There is no allowlist of mechanics
+in the gate — it enforces whatever your profile declares, whether that is `sort` or a verb
+nobody here has heard of. That is deliberate: the roles system means the gates work by walking
+your declarations rather than by recognising a name.
+
+**But gating a mechanic and playing one are different things, and only the first is solved.**
+The gate will happily prove a bank of your own verb is safe. What does not exist yet is anything
+that renders and runs it — so a mechanic you invent is something you can author and check, not
+something Owhile can currently play. Since listing is not open either, nothing is lost by
+inventing one today; it is worth knowing before you build four hundred items around a verb, and
+worth asking us about first if you are going to.
+[Listing](https://owhile.vercel.app/creators/listing.md) has the rest of what is and is not
+settled.
+
 **Invariants** are your structural rules. Nine kinds are understood:
 
 | Kind | Requires | Checks |

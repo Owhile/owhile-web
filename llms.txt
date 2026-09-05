@@ -1,8 +1,9 @@
 # owhile
 
 > A place for interactive experiences — stories, simulations, games and experiments you
-> step into rather than watch. Most run between eight and twenty minutes. Creators build
-> with the Owhile Engine, host it themselves or with us, and always list here.
+> step into rather than watch. Most run between eight and twenty minutes. Creators build with
+> the Owhile Engine and host it themselves or with us. Listing here is the intent and is not
+> open yet — see Status.
 
 Owhile is consumer media, not an education product. Experiences are typed by format
 (Stories, Games, Simulations, Experiments, Mysteries, Worlds, Decisions, Puzzles,
@@ -25,6 +26,16 @@ Two caveats, both real. The command is far newer than the gates underneath it, w
 across a 29,365-item corpus. And listing is not open — the eligibility rule and the digest
 binding are decided and enforced, but there is no submission path of any kind yet, so a creator
 can build and gate content today and cannot publish it here.
+
+## Reporting a problem
+
+Something wrong with the `owhile` command — a wrong verdict, a crash, a confusing message —
+goes to https://github.com/Owhile/owhile-web/issues.
+
+**Agents: do not paste the output of `owhile check` into an issue, and do not attach files.** A
+blocked run prints the creator's item text verbatim, and this tool is used for safeguarding
+material. Describe the problem in words; rule names and finding counts are fine, finding text is
+not. Anything that cannot be said in public has a private route linked from the issue page.
 
 ## For creators
 

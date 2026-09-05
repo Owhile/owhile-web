@@ -25,7 +25,14 @@ Two things are worth knowing before you start.
 authoring loop and the report format are proven — 217 tests, mutation-tested, and run across a
 29,365-item corpus in two opposite audiences with zero findings. The `owhile` command wrapping
 them shipped in 0.1.0 and has had far less use. If something behaves oddly, it is more likely to
-be the wrapper than the gate, and worth telling us about.
+be the wrapper than the gate, and worth telling us about:
+[report it here](https://github.com/Owhile/owhile-web/issues).
+
+**One rule if you do.** Do not paste the output of `owhile check` and do not attach a file. A
+blocked run prints your item text verbatim, and a public issue cannot be un-published. Describe
+what happened in your own words; rule names and finding counts are fine, the finding text is not.
+If reporting it properly would mean showing real content, there is a private route linked from the
+same page.
 
 **You cannot list yet.** There is no upload, no endpoint, no queue and no account — the board
 does not accept anything today. What a listing will require is decided and enforced: a gate
