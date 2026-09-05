@@ -1,9 +1,11 @@
 # owhile
 
-> A place for interactive experiences — stories, simulations, games and experiments you
-> step into rather than watch. Most run between eight and twenty minutes. Creators build with
-> the Owhile Engine and host it themselves or with us. Listing here is the intent and is not
-> open yet — see Status.
+> Two things share this name. **Owhile** is a planned destination for interactive experiences —
+> stories, simulations, games and experiments you step into rather than watch. It is not open:
+> nothing is listed and there is no way to publish. **`owhile`** is a Python tool that ships
+> today and does one job: it checks whether a body of content is safe for the audience you
+> declared it for. If you came looking for a game engine or a library of playable mechanics,
+> stop here — that is the planned part, and none of it exists yet.
 
 Owhile is consumer media, not an education product. Experiences are typed by format
 (Stories, Games, Simulations, Experiments, Mysteries, Worlds, Decisions, Puzzles,
@@ -13,6 +15,17 @@ Owhile is for adults. Experiences aimed at under-18s are not listed, and the che
 enforces this fails closed: an undeclared minimum age blocks a listing.
 
 ## If you are an agent helping someone build an experience
+
+**First, what this tool is and is not**, because it is easy to expect the wrong thing. `owhile`
+validates content; it does not run it. A *mechanic* here is not code and not a playable
+component — it is a declaration in your profile: a verb name, a map saying what each field is
+for, and structural rules. The four that ship (`reflect`, `sort`, `spot`, `branch`) are worked
+examples inside two reference profiles, not a library to borrow from. Declaring your own needs
+no permission from anyone and the gates will enforce it — but nothing here will render it.
+**Gating a mechanic and playing one are different problems, and only the first is solved.**
+
+What you get is a defensible answer to "is this content safe for this audience?", bound by
+digest to the exact content and the exact code that checked it. That is the whole product today.
 
 **The documentation is not on this website. It ships with the tool**, so that what you read
 always describes the version you have rather than whatever was true when a web page was last
