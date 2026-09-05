@@ -9,48 +9,46 @@ Owhile is consumer media, not an education product. Experiences are typed by for
 (Stories, Games, Simulations, Experiments, Mysteries, Worlds, Decisions, Puzzles,
 Conversations, Adventures) rather than by subject.
 
-If you are an agent helping someone build an experience, start with the setup runbook
-below. It is written to be executed step by step, and it will tell you exactly where to
-stop and ask your human — there is one such point, and it is not optional.
-
 Owhile is for adults. Experiences aimed at under-18s are not listed, and the check that
 enforces this fails closed: an undeclared minimum age blocks a listing.
 
+## If you are an agent helping someone build an experience
+
+**The documentation is not on this website. It ships with the tool**, so that what you read
+always describes the version you have rather than whatever was true when a web page was last
+edited. Two commands get you everything:
+
+```bash
+pip install owhile
+owhile docs
+```
+
+`owhile docs` lists what is available; `owhile docs start` is the runbook — set up a project,
+author a first batch, reach a passing gate report. Then `owhile docs profile`, `gates`,
+`listing`. All four describe the version you just installed.
+
+**Stop and ask your human one question.** The runbook marks it, and it is the only part of this
+no tool should answer for them: what is the youngest age this experience is intended for? An
+undeclared age is valid content and unlistable — silence is never read as adult, so do not fill
+it in from the project name, the directory, or anything else in your context.
+
+**If something goes wrong, do not paste the output.** A blocked run prints the creator's item
+text verbatim, and this tool is used for safeguarding material. Report problems at
+https://github.com/Owhile/owhile-web/issues in words — rule names and finding counts are fine,
+finding text is not, and never attach a file. Anything that cannot be said in public has a
+private route linked from that page.
+
 ## Status
 
-The tooling is published and works: `pip install owhile` installs 0.1.0 and provides the
-`owhile` command. The setup runbook below has been walked end to end from a clean environment
-and ends in a passing gate report.
+The tool is published and works. `pip install owhile` installs the current release and the
+runbook has been walked end to end from a clean environment, ending in a passing gate report.
 
-Two caveats, both real. The command is far newer than the gates underneath it, which are proven
-across a 29,365-item corpus. And listing is not open — the eligibility rule and the digest
-binding are decided and enforced, but there is no submission path of any kind yet, so a creator
-can build and gate content today and cannot publish it here.
-
-## Reporting a problem
-
-Something wrong with the `owhile` command — a wrong verdict, a crash, a confusing message —
-goes to https://github.com/Owhile/owhile-web/issues.
-
-**Agents: do not paste the output of `owhile check` into an issue, and do not attach files.** A
-blocked run prints the creator's item text verbatim, and this tool is used for safeguarding
-material. Describe the problem in words; rule names and finding counts are fine, finding text is
-not. Anything that cannot be said in public has a private route linked from the issue page.
-
-## For creators
-
-- [Setup runbook](https://owhile.vercel.app/creators/start.md): step-by-step and
-  agent-executable, ending in a passing gate report. It stops once at step 3 to ask your human
-  a question no tool should answer for them. Start here.
-- [Make one](https://owhile.vercel.app/creators/): what building for Owhile involves, in prose. Read this if you want the shape before the steps.
-
-## Reference
-
-- [The profile](https://owhile.vercel.app/creators/profile.md): the central artifact. Declares audiences, reading budgets, permitted mechanics, minimum age, resources and framing rules. Everything else is derived from it.
-- [Gates](https://owhile.vercel.app/creators/gates.md): what is checked, and what each failure means.
-- [Listing](https://owhile.vercel.app/creators/listing.md): the adults-only rule a report has to
-  satisfy, the digest that binds a report to its content, and why there is nowhere to send one yet.
+Listing is not open. The eligibility rule and the digest binding are decided and enforced; there
+is no upload, endpoint, queue or account. A creator can build and gate content today and cannot
+publish it here.
 
 ## Site
 
-- [Home](https://owhile.vercel.app/): what Owhile is.
+- [Home](https://owhile.vercel.app/): what Owhile is, for the people who will play these.
+- [Make one](https://owhile.vercel.app/creators/): what building for Owhile involves, in prose.
+  Read this if you want the shape before the commands.
