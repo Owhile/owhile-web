@@ -2,10 +2,10 @@
 
 > Two things share this name. **Owhile** is a planned destination for interactive experiences —
 > stories, simulations, games and experiments you step into rather than watch. It is not open:
-> nothing is listed and there is no way to publish. **`owhile`** is a Python tool that ships
-> today and does one job: it checks whether a body of content is safe for the audience you
-> declared it for. If you came looking for a game engine or a library of playable mechanics,
-> stop here — that is the planned part, and none of it exists yet.
+> nothing is listed and there is no way to publish. **`owhile`** is a Python package that ships
+> today. It carries a library of **ten play verbs under Apache 2.0**, checks whether content is
+> safe for the audience you declared it for, scores a learner's response, and decides what to show
+> next. It does **not** draw anything — presenting the item is yours.
 
 Owhile is consumer media, not an education product. Experiences are typed by format
 (Stories, Games, Simulations, Experiments, Mysteries, Worlds, Decisions, Puzzles,
@@ -17,15 +17,22 @@ enforces this fails closed: an undeclared minimum age blocks a listing.
 ## If you are an agent helping someone build an experience
 
 **First, what this tool is and is not**, because it is easy to expect the wrong thing. `owhile`
-validates content; it does not run it. A *mechanic* here is not code and not a playable
-component — it is a declaration in your profile: a verb name, a map saying what each field is
-for, and structural rules. The four that ship (`reflect`, `sort`, `spot`, `branch`) are worked
-examples inside two reference profiles, not a library to borrow from. Declaring your own needs
-no permission from anyone and the gates will enforce it — but nothing here will render it.
-**Gating a mechanic and playing one are different problems, and only the first is solved.**
+gates content, grades a response and runs a session. It does not draw one.
 
-What you get is a defensible answer to "is this content safe for this audience?", bound by
-digest to the exact content and the exact code that checked it. That is the whole product today.
+**Ten verbs ship, under Apache 2.0** — `swipe`, `match`, `sort`, `build`, `spot`, `branch`,
+`role-play`, `explore-label`, `reflect`, `strike-rewrite`. A *mechanic* is a declaration rather
+than a component: a verb name, a map of what each field is for, structural rules, a chance model
+and how a response is graded. That is the part that is hard to get right, and it is done for these
+ten. `owhile mechanics --library` describes them; `owhile mechanics add sort` puts one in your
+profile. Take them, change them, ship them, commercially or not — keep the notice.
+
+You can also declare a verb nobody here has heard of: there is no allowlist in the gate.
+
+**Gating, grading and running a mechanic are solved. Presenting one is not, and is yours.**
+
+What you get is ten verbs you did not have to design, a defensible answer to "is this content safe
+for this audience?" bound by digest to the exact content and code that checked it, a grader, and a
+session. What you build on top is yours.
 
 **The documentation is not on this website. It ships with the tool**, so that what you read
 always describes the version you have rather than whatever was true when a web page was last
@@ -37,8 +44,9 @@ owhile docs
 ```
 
 `owhile docs` lists what is available; `owhile docs start` is the runbook — set up a project,
-author a first batch, reach a passing gate report. Then `owhile docs profile`, `gates`,
-`listing`. All four describe the version you just installed.
+author a first batch, reach a passing gate report. Then `owhile docs mechanics` for the verbs and
+how to design your own, and `profile`, `gates`, `listing`. All five describe the version you just
+installed.
 
 **Stop and ask your human one question.** The runbook marks it, and it is the only part of this
 no tool should answer for them: what is the youngest age this experience is intended for? An
